@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@layer base {
+  body {
+    @apply antialiased text-gray-900 bg-white dark:text-white dark:bg-pal-dark transition-colors duration-300;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    /* Force RTL for Arabic by default on body, we can control per component if needed */
+    direction: rtl; 
+  }
+}
+
+/* Base custom utilities */
+@layer utilities {
+  .glass {
+    @apply bg-white/70 dark:bg-black/50 backdrop-blur-md border border-white/20 dark:border-white/10;
+  }
+  
+  .glass-card {
+    @apply bg-white dark:bg-pal-darkGray border border-gray-100 dark:border-gray-800 shadow-xl dark:shadow-2xl;
+  }
+}
+
+/* Keep Preloader CSS separate or merge it here. Let's merge it to keep things clean */
+.preloader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  @apply bg-white dark:bg-pal-dark z-[9999];
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease-in-out, visibility 0.5s;
+}
+
+.preloader {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 10px #149954);
+}
+
+.crack {
+  position: absolute;
+  width: 40%;
+  aspect-ratio: 1;
+  background-color: #149954;
+  clip-path: polygon(
+    50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 
+    50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%
+  );
+  animation: rotate 4s infinite linear;
+  opacity: 0.8;
+}
+
+.crack1 { width: 30%; animation-duration: 3s; }
+.crack2 { width: 45%; animation-delay: 0.5s; animation-duration: 4s; }
+.crack3 { width: 60%; animation-delay: 1s; animation-duration: 5s; }
+.crack4 { width: 75%; animation-delay: 1.5s; animation-duration: 6s; }
+.crack5 { width: 90%; animation-delay: 2s; animation-duration: 7s; }
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
