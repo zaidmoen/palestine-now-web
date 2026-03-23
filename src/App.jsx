@@ -4,6 +4,7 @@ import Preloader from './components/Preloader'
 import Navbar from './components/Navbar'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
+import SearchPage from './pages/SearchPage'
 
 function Layout({ children }) {
   const location = useLocation()
@@ -31,7 +32,7 @@ function App() {
       <Routes>
         <Route path="/"          element={<HomePage />} />
         <Route path="/login"     element={<LoginPage />} />
-        <Route path="/search"    element={<ComingSoon title="بحث ذكي" />} />
+        <Route path="/search"    element={<SearchPage />} />
         <Route path="/students"  element={<ComingSoon title="طلاب" />} />
         <Route path="/jobs"      element={<ComingSoon title="وظايف" />} />
         <Route path="/economy"   element={<ComingSoon title="اقتصاد" />} />
