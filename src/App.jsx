@@ -4,6 +4,7 @@ import Preloader from './components/Preloader'
 import Navbar from './components/Navbar'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
+import NewsPage from './pages/NewsPage'
 import SearchPage from './pages/SearchPage'
 import StudentsPage from './pages/StudentsPage'
 
@@ -40,7 +41,7 @@ function App() {
         <Route path="/economy" element={<ComingSoon title="اقتصاد" />} />
         <Route path="/solidarity" element={<ComingSoon title="تكافل" />} />
         <Route path="/roads" element={<ComingSoon title="طرق" />} />
-        <Route path="/news" element={<ComingSoon title="أخبار" />} />
+        <Route path="/news" element={<NewsPage />} />
         <Route path="/emergency" element={<ComingSoon title="طوارئ" />} />
       </Routes>
     </Layout>
