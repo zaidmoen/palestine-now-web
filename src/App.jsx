@@ -1,21 +1,45 @@
-import { useState, useEffect } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Preloader from './components/Preloader'
 import Navbar from './components/Navbar'
-import HomePage from './pages/HomePage'
-import LoginPage from './pages/LoginPage'
-import NewsPage from './pages/NewsPage'
-import SearchPage from './pages/SearchPage'
-import StudentsPage from './pages/StudentsPage'
+import ScrollProgress from './components/ScrollProgress'
+import ScrollToTop from './components/ScrollToTop'
+
+const HomePage = lazy(() => import('./pages/HomePage'))
+const LoginPage = lazy(() => import('./pages/LoginPage'))
+const NewsPage = lazy(() => import('./pages/NewsPage'))
+const SearchPage = lazy(() => import('./pages/SearchPage'))
+const StudentsPage = lazy(() => import('./pages/StudentsPage'))
+const JobsPage = lazy(() => import('./pages/JobsPage'))
+const EconomyPage = lazy(() => import('./pages/EconomyPage'))
+const SolidarityPage = lazy(() => import('./pages/SolidarityPage'))
+const RoadsPage = lazy(() => import('./pages/RoadsPage'))
+const EmergencyPage = lazy(() => import('./pages/EmergencyPage'))
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 function Layout({ children }) {
   const location = useLocation()
   const hideNavbar = ['/login', '/register'].includes(location.pathname)
 
   return (
-    <div className="min-h-screen bg-bg text-t1 w-full">
+    <div className="min-h-screen w-full" style={{ background: 'var(--bg)', color: 'var(--text-primary)' }}>
+      <ScrollProgress />
+      <ScrollToTop />
       {!hideNavbar && <Navbar />}
       {children}
+    </div>
+  )
+}
+
+function RouteFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg)' }}>
+      <div className="flex flex-col items-center gap-4 px-6 text-center">
+        <div className="preloader-spinner" />
+        <p className="text-sm font-bold" style={{ color: 'var(--text-muted)' }}>
+          جارٍ تحميل الصفحة...
+        </p>
+      </div>
     </div>
   )
 }
@@ -24,7 +48,7 @@ function App() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 2000)
+    const timer = setTimeout(() => setLoading(false), 1800)
     return () => clearTimeout(timer)
   }, [])
 
@@ -32,30 +56,22 @@ function App() {
 
   return (
     <Layout>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/search" element={<SearchPage />} />
-        <Route path="/students" element={<StudentsPage />} />
-        <Route path="/jobs" element={<ComingSoon title="وظائف" />} />
-        <Route path="/economy" element={<ComingSoon title="اقتصاد" />} />
-        <Route path="/solidarity" element={<ComingSoon title="تكافل" />} />
-        <Route path="/roads" element={<ComingSoon title="طرق" />} />
-        <Route path="/news" element={<NewsPage />} />
-        <Route path="/emergency" element={<ComingSoon title="طوارئ" />} />
-      </Routes>
+      <Suspense fallback={<RouteFallback />}>
+        <Routes>
+          <Route path="/"          element={<HomePage />} />
+          <Route path="/login"     element={<LoginPage />} />
+          <Route path="/search"    element={<SearchPage />} />
+          <Route path="/students"  element={<StudentsPage />} />
+          <Route path="/jobs"      element={<JobsPage />} />
+          <Route path="/economy"   element={<EconomyPage />} />
+          <Route path="/solidarity"element={<SolidarityPage />} />
+          <Route path="/roads"     element={<RoadsPage />} />
+          <Route path="/news"      element={<NewsPage />} />
+          <Route path="/emergency" element={<EmergencyPage />} />
+          <Route path="*"          element={<NotFoundPage />} />
+        </Routes>
+      </Suspense>
     </Layout>
-  )
-}
-
-function ComingSoon({ title }) {
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-t1 mb-4">{title}</h1>
-        <p className="text-t2 text-lg">قريبًا...</p>
-      </div>
-    </div>
   )
 }
 
