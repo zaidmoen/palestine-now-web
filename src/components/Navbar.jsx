@@ -2,41 +2,40 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Menu, X, Moon, Sun, Bell, MessageCircle,
+  Menu, X, Bell, MessageCircle,
   Home, Search, GraduationCap, Briefcase, TrendingUp,
   Heart, MapPin, Newspaper, AlertTriangle, LogIn
 } from 'lucide-react';
+import EmojiIcon from './EmojiIcon';
 
 const navLinks = [
-  { to: '/',          label: 'الرئيسية', icon: Home },
-  { to: '/search',    label: 'بحث',      icon: Search },
-  { to: '/students',  label: 'طلاب',     icon: GraduationCap },
-  { to: '/jobs',      label: 'وظايف',    icon: Briefcase },
-  { to: '/economy',   label: 'اقتصاد',   icon: TrendingUp },
-  { to: '/solidarity',label: 'تكافل',    icon: Heart },
-  { to: '/roads',     label: 'طرق',      icon: MapPin },
-  { to: '/news',      label: 'أخبار',    icon: Newspaper },
-  { to: '/emergency', label: 'طوارئ',    icon: AlertTriangle },
+  { to: '/',          label: 'الرئيسية',  icon: Home },
+  { to: '/search',    label: 'بحث ذكي',   icon: Search },
+  { to: '/students',  label: 'طلاب',      icon: GraduationCap },
+  { to: '/jobs',      label: 'وظائف',     icon: Briefcase },
+  { to: '/economy',   label: 'اقتصاد',    icon: TrendingUp },
+  { to: '/solidarity',label: 'تكافل',     icon: Heart },
+  { to: '/roads',     label: 'طرق',       icon: MapPin },
+  { to: '/news',      label: 'أخبار',     icon: Newspaper },
+  { to: '/emergency', label: 'طوارئ',     icon: AlertTriangle },
 ];
 
 const notifications = [
-  { id: 1, text: 'تم نشر 15 وظيفة جديدة في رام الله', time: 'منذ 5 دقائق',   unread: true  },
-  { id: 2, text: 'تحديث حالة الطرق: طريق نابلس مفتوح',  time: 'منذ 12 دقيقة', unread: true  },
-  { id: 3, text: 'حملة تكافل جديدة: دعم عائلات غزة',    time: 'منذ ساعة',     unread: false },
-  { id: 4, text: 'نتائج الثانوية العامة متاحة الآن',     time: 'منذ 3 ساعات',  unread: false },
+  { id: 1, text: 'تم نشر 15 وظيفة جديدة في رام الله', time: 'منذ 5 دقائق',  unread: true  },
+  { id: 2, text: 'تحديث: طريق نابلس مفتوح',           time: 'منذ 12 دقيقة', unread: true  },
+  { id: 3, text: 'حملة تكافل جديدة: دعم عائلات غزة',  time: 'منذ ساعة',     unread: false },
 ];
 
 export default function Navbar() {
-  const [scrolled, setScrolled]     = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [darkMode, setDarkMode]     = useState(true);
-  const [showNotif, setShowNotif]   = useState(false);
+  const [scrolled,    setScrolled]    = useState(false);
+  const [mobileOpen,  setMobileOpen]  = useState(false);
+  const [showNotif,   setShowNotif]   = useState(false);
   const notifRef  = useRef(null);
   const location  = useLocation();
-  const isLogin   = location.pathname === '/login';
+  const isLogin   = ['/login', '/register'].includes(location.pathname);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 50);
+    const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -54,144 +53,157 @@ export default function Navbar() {
     return () => { document.body.style.overflow = ''; };
   }, [mobileOpen]);
 
-  // Close mobile menu on navigation
   useEffect(() => { setMobileOpen(false); }, [location.pathname]);
 
   const unreadCount = notifications.filter(n => n.unread).length;
 
-  // Don't render navbar on login page (it has its own header)
   if (isLogin) return null;
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? 'glass-nav shadow-lg' : 'bg-transparent'
-      }`}>
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 h-16 lg:h-[72px] flex items-center justify-between">
-
-          {/* RIGHT — Logo */}
-          <Link to="/" className="flex items-center gap-2 shrink-0">
-            <span className="text-2xl">🇵🇸</span>
-            <div className="flex flex-col leading-tight">
-              <span className="text-lg font-bold text-primary-light tracking-tight">فلسطين الآن</span>
-              <span className="text-[10px] text-t3 -mt-0.5">منصتك الرقمية</span>
-            </div>
-          </Link>
-
-          {/* CENTER — Desktop Nav Links */}
-          <div className="hidden lg:flex items-center gap-1">
-            {navLinks.map((link) => {
-              const isActive = location.pathname === link.to;
-              return (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className="relative px-3 py-2 text-sm font-semibold transition-colors duration-200 group"
-                >
-                  <span className={isActive ? 'text-primary-light' : 'text-t2 group-hover:text-t1'}>
-                    {link.label}
-                  </span>
-                  {isActive && (
-                    <motion.div
-                      layoutId="nav-underline"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-light rounded-full"
-                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                </Link>
-              );
-            })}
-          </div>
-
-          {/* LEFT — Actions */}
-          <div className="flex items-center gap-2">
-
-            {/* Theme Toggle */}
-            <button
-              onClick={() => setDarkMode(!darkMode)}
-              className="hidden sm:flex w-9 h-9 items-center justify-center rounded-xl text-t2 hover:text-t1 hover:bg-surface-2 transition-all"
-              aria-label="تبديل المظهر"
-            >
-              {darkMode ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-
-            {/* Notification Bell */}
-            <div className="relative hidden sm:block" ref={notifRef}>
-              <button
-                onClick={() => setShowNotif(!showNotif)}
-                className="w-9 h-9 flex items-center justify-center rounded-xl text-t2 hover:text-t1 hover:bg-surface-2 transition-all relative"
-                aria-label="الإشعارات"
-              >
-                <Bell size={18} />
-                {unreadCount > 0 && (
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-pal-red rounded-full ring-2 ring-bg" />
-                )}
-              </button>
-
-              <AnimatePresence>
-                {showNotif && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -8, scale: 0.96 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -8, scale: 0.96 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute left-0 top-12 w-80 card p-0 overflow-hidden"
-                    style={{ direction: 'rtl' }}
-                  >
-                    <div className="p-4 border-b border-subtle flex items-center justify-between">
-                      <span className="font-bold text-t1 text-sm">الإشعارات</span>
-                      <span className="text-xs text-primary-light cursor-pointer hover:underline">قراءة الكل</span>
-                    </div>
-                    <div className="max-h-72 overflow-y-auto">
-                      {notifications.map((n) => (
-                        <div
-                          key={n.id}
-                          className={`px-4 py-3 flex gap-3 border-b border-subtle hover:bg-surface-2 transition-colors cursor-pointer ${n.unread ? 'bg-surface-2/50' : ''}`}
-                        >
-                          {n.unread && <span className="mt-2 w-2 h-2 bg-primary-light rounded-full shrink-0" />}
-                          <div className={!n.unread ? 'mr-5' : ''}>
-                            <p className="text-sm text-t1 leading-relaxed">{n.text}</p>
-                            <span className="text-xs text-t3 mt-1 block">{n.time}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* ━━━ LOGIN BUTTON ━━━ */}
-            <Link
-              to="/login"
-              className="hidden sm:inline-flex items-center gap-1.5 border border-subtle hover:border-primary-light text-t1 text-xs font-bold px-4 h-9 rounded-full transition-all hover:bg-primary/10 hover:text-primary-light"
-            >
-              <LogIn size={14} />
-              دخول
+      <div className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 pt-4 pb-2 pointer-events-none">
+        <motion.nav
+          initial={{ y: -100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+          className={`pointer-events-auto rounded-[32px] transition-all duration-500 w-full max-w-[1300px] ${
+            scrolled
+              ? 'nav-glass shadow-island py-2 px-4'
+              : 'bg-bg-card/70 backdrop-blur-xl border border-border shadow-md py-3 px-5 lg:px-6'
+          }`}
+        >
+          <div className="flex items-center justify-between gap-4">
+            {/* RIGHT — Logo */}
+            <Link to="/" className="flex items-center gap-2.5 shrink-0 group rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light">
+              <EmojiIcon
+                emoji="🇵🇸"
+                label="علم فلسطين"
+                size={28}
+                priority
+                decorative={false}
+                className="transition-transform group-hover:scale-110"
+              />
+              <div className="flex flex-col leading-[1.1]">
+                <span className="text-base font-black text-primary tracking-tight transition-colors group-hover:text-primary-light">
+                  فلسطين الآن
+                </span>
+                <span className="text-[10px] text-text-muted font-bold tracking-widest">المواطن أولاً</span>
+              </div>
             </Link>
 
-            {/* WhatsApp CTA */}
-            <a
-              href="https://wa.me/970"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden sm:inline-flex items-center gap-1.5 bg-green-bright hover:bg-green-bright/90 text-white text-xs font-bold px-4 h-9 rounded-full transition-all hover:scale-105 shadow-lg shadow-green-bright/20"
-            >
-              <MessageCircle size={14} />
-              واتساب
-            </a>
+            {/* CENTER — Desktop Nav (Classic 2025 Pill links) */}
+            <div className="hidden xl:flex items-center gap-1.5 flex-1 justify-center">
+              {navLinks.map((link) => {
+                const isActive = location.pathname === link.to;
+                return (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    className="relative px-4 py-2 rounded-full text-[14px] font-bold transition-colors focus-visible:outline-none"
+                    style={{ color: isActive ? 'var(--primary)' : 'var(--text-secondary)' }}
+                  >
+                    <span className="relative z-10">{link.label}</span>
+                    {isActive && (
+                      <motion.div
+                        layoutId="nav-pill"
+                        className="absolute inset-0 bg-primary-50 rounded-full border border-primary-100 z-0"
+                        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                      />
+                    )}
+                    {!isActive && (
+                      <div className="absolute inset-0 bg-bg-muted rounded-full opacity-0 hover:opacity-100 transition-opacity z-0" />
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
 
-            {/* Mobile Hamburger */}
-            <button
-              onClick={() => setMobileOpen(true)}
-              className="lg:hidden w-9 h-9 flex items-center justify-center rounded-xl text-t2 hover:text-t1 hover:bg-surface-2 transition-all"
-              aria-label="القائمة"
-            >
-              <Menu size={20} />
-            </button>
+            {/* LEFT — Actions */}
+            <div className="flex items-center gap-3 shrink-0">
+              {/* Notification Bell */}
+              <div className="relative hidden sm:block" ref={notifRef}>
+                <button
+                  onClick={() => setShowNotif(!showNotif)}
+                  className={`w-10 h-10 flex items-center justify-center rounded-full transition-colors ${
+                    showNotif ? 'bg-primary-50 text-primary' : 'bg-transparent text-text-secondary hover:bg-bg-muted'
+                  }`}
+                  aria-label="الإشعارات"
+                >
+                  <Bell size={18} />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-2 right-2.5 w-2 h-2 rounded-full bg-error ring-2 ring-bg-card" />
+                  )}
+                </button>
+
+                <AnimatePresence>
+                  {showNotif && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      transition={{ duration: 0.15, ease: 'easeOut' }}
+                      className="absolute left-0 top-14 w-80 global-card overflow-hidden z-50 p-2"
+                      style={{ direction: 'rtl' }}
+                    >
+                      <div className="px-3 py-2 flex items-center justify-between mb-1">
+                        <span className="font-extrabold text-sm text-text-primary">الإشعارات</span>
+                        <span className="text-xs font-bold text-primary cursor-pointer hover:underline">قراءة الكل</span>
+                      </div>
+                      <div className="max-h-72 overflow-y-auto space-y-1">
+                        {notifications.map((n) => (
+                          <div
+                            key={n.id}
+                            className={`p-3 rounded-xl flex gap-3 cursor-pointer transition-colors ${
+                              n.unread ? 'bg-primary-50 hover:bg-primary-100' : 'hover:bg-bg-muted'
+                            }`}
+                          >
+                            {n.unread && (
+                              <span className="mt-1.5 w-2 h-2 rounded-full bg-primary shrink-0" />
+                            )}
+                            <div className={!n.unread ? 'mr-5' : ''}>
+                              <p className="text-[13px] font-semibold leading-relaxed text-text-primary">{n.text}</p>
+                              <span className="text-[11px] font-bold text-text-light mt-1 block">{n.time}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Login Button Minimal */}
+              <Link
+                to="/login"
+                className="hidden md:inline-flex items-center justify-center h-10 px-5 rounded-full text-sm font-extrabold transition-all text-text-primary bg-bg-muted hover:bg-border-strong"
+              >
+                دخول
+              </Link>
+
+              {/* WhatsApp CTA */}
+              <a
+                href="https://wa.me/970"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden sm:inline-flex items-center gap-1.5 text-white text-sm font-extrabold px-5 h-10 rounded-full transition-transform hover:scale-105 shadow-md shadow-green-500/20"
+                style={{ background: '#25D366' }}
+              >
+                <MessageCircle size={15} />
+                واتساب
+              </a>
+
+              {/* Mobile Hamburger */}
+              <button
+                onClick={() => setMobileOpen(true)}
+                className="xl:hidden w-10 h-10 flex items-center justify-center rounded-full text-text-primary bg-bg-muted hover:bg-border-strong transition-colors"
+                aria-label="القائمة"
+              >
+                <Menu size={20} />
+              </button>
+            </div>
           </div>
-        </div>
-      </nav>
+        </motion.nav>
+      </div>
 
       {/* ━━━ Mobile Drawer ━━━ */}
       <AnimatePresence>
@@ -201,30 +213,30 @@ export default function Navbar() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/60 z-[60]"
+              className="fixed inset-0 z-[60] bg-text-primary/30 backdrop-blur-sm"
               onClick={() => setMobileOpen(false)}
             />
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed top-0 right-0 bottom-0 w-72 bg-surface z-[70] shadow-2xl flex flex-col"
+              transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+              className="fixed top-0 right-0 bottom-0 w-[85vw] max-w-sm z-[70] flex flex-col shadow-2xl bg-bg-card"
             >
-              <div className="h-16 px-5 flex items-center justify-between border-b border-subtle">
+              <div className="h-20 px-6 flex items-center justify-between border-b border-border">
                 <div className="flex items-center gap-2">
-                  <span className="text-xl">🇵🇸</span>
-                  <span className="text-base font-bold text-primary-light">فلسطين الآن</span>
+                  <EmojiIcon emoji="🇵🇸" label="علم فلسطين" size={28} decorative={false} />
+                  <span className="text-xl font-black text-primary">فلسطين الآن</span>
                 </div>
                 <button
                   onClick={() => setMobileOpen(false)}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg text-t2 hover:text-t1 hover:bg-surface-2 transition-all"
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-bg-muted text-text-secondary hover:bg-border-strong transition-all"
                 >
-                  <X size={18} />
+                  <X size={20} />
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto py-3 px-3">
+              <div className="flex-1 overflow-y-auto py-6 px-4 space-y-2">
                 {navLinks.map((link, i) => {
                   const isActive = location.pathname === link.to;
                   const Icon = link.icon;
@@ -237,46 +249,28 @@ export default function Navbar() {
                     >
                       <Link
                         to={link.to}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all mb-1 ${
-                          isActive ? 'bg-primary/10 text-primary-light' : 'text-t2 hover:text-t1 hover:bg-surface-2'
+                        className={`flex items-center gap-3.5 px-5 py-4 rounded-2xl text-base font-extrabold transition-all ${
+                          isActive
+                            ? 'bg-primary-50 text-primary shadow-sm border border-primary-100'
+                            : 'text-text-secondary hover:bg-bg-muted'
                         }`}
                       >
-                        <Icon size={18} />
+                        <Icon size={20} className={isActive ? 'text-primary' : 'text-text-muted'} />
                         {link.label}
                       </Link>
                     </motion.div>
                   );
                 })}
 
-                {/* Login link in mobile menu */}
                 <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: navLinks.length * 0.04 }}>
                   <Link
                     to="/login"
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all mb-1 text-primary-light hover:bg-primary/10"
+                    className="flex items-center gap-3.5 px-5 py-4 rounded-2xl text-base font-extrabold transition-all text-text-primary bg-bg-muted hover:bg-border-strong mt-4"
                   >
-                    <LogIn size={18} />
-                    تسجيل الدخول
+                    <LogIn size={20} className="text-text-muted" />
+                    تسجيل الدخول / إنشاء حساب
                   </Link>
                 </motion.div>
-              </div>
-
-              <div className="p-4 border-t border-subtle space-y-3">
-                <button
-                  onClick={() => setDarkMode(!darkMode)}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-surface-2 text-t2 hover:text-t1 text-sm font-semibold transition-all"
-                >
-                  {darkMode ? <Sun size={16} /> : <Moon size={16} />}
-                  {darkMode ? 'الوضع الفاتح' : 'الوضع الداكن'}
-                </button>
-                <a
-                  href="https://wa.me/970"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-green-bright text-white text-sm font-bold transition-all hover:bg-green-bright/90"
-                >
-                  <MessageCircle size={16} />
-                  واتساب
-                </a>
               </div>
             </motion.div>
           </>
