@@ -12,8 +12,8 @@ import {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Gemini Integration Setup
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-const API_KEY = "AIzaSyCczXoIVmQffDYgZG7DwEPeLIA6RwZ10ig";
-const genAI = new GoogleGenerativeAI(API_KEY);
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY?.trim();
+const assistantUnavailableMessage = 'ميزة البحث الذكي غير مفعلة حالياً. أضف VITE_GEMINI_API_KEY داخل .env.local ثم أعد تشغيل المشروع.';
 
 const systemInstruction = `أنت المساعد الرقمي فائق الذكاء لمنصة "فلسطين الآن"، واسمك "مساعد فلسطين".
 مهمتك: تقديم إجابات سريعة، دقيقة، ومفيدة جداً للمواطنين الفلسطينيين في مجالات: الخدمات الحكومية، أرقام الطوارئ، الرعاية الصحية، الأخبار، فرص العمل، والتعليم.
@@ -24,10 +24,12 @@ const systemInstruction = `أنت المساعد الرقمي فائق الذك�
 - أجب بشكل منظم، مختصر ومفيد، دون مقدمات طويلة.
 - إذا سئلت عن معلومات حساسة، وجه المواطن بلطف للجهات الرسمية.`;
 
-const model = genAI.getGenerativeModel({
-  model: "gemini-2.5-flash",
-  systemInstruction,
-});
+const model = API_KEY
+  ? new GoogleGenerativeAI(API_KEY).getGenerativeModel({
+      model: "gemini-2.5-flash",
+      systemInstruction,
+    })
+  : null;
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Suggested Prompts
@@ -62,6 +64,7 @@ const mkComponents = {
 // Main Page Component
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export default function SearchPage() {
+  const isAssistantAvailable = Boolean(model);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -72,6 +75,8 @@ export default function SearchPage() {
 
   // Initialize chat session on mount
   useEffect(() => {
+    if (!model) return;
+
     try {
       chatRef.current = model.startChat({
         history: [],
@@ -94,6 +99,7 @@ export default function SearchPage() {
   const handleSend = async (text) => {
     const query = text.trim();
     if (!query) return;
+    if (!isAssistantAvailable) return;
 
     // Add user message to UI
     setMessages(prev => [...prev, { role: 'user', text: query }]);
@@ -131,6 +137,8 @@ export default function SearchPage() {
   const handleClear = () => {
     setMessages([]);
     setError(null);
+    if (!model) return;
+
     chatRef.current = model.startChat({
       history: [],
       generationConfig: { maxOutputTokens: 1024, temperature: 0.65 },
@@ -152,7 +160,13 @@ export default function SearchPage() {
           transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
           className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-accent/5 rounded-full blur-[100px]" 
         />
-        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
+        <div
+          className="absolute inset-0 opacity-[0.08] mix-blend-overlay"
+          style={{
+            backgroundImage: 'radial-gradient(rgba(255,255,255,0.28) 0.8px, transparent 0.8px)',
+            backgroundSize: '18px 18px',
+          }}
+        />
       </div>
 
       <div className="flex-1 w-full max-w-5xl mx-auto flex flex-col relative z-10 px-4 sm:px-6 lg:px-8 pb-32">
@@ -198,6 +212,20 @@ export default function SearchPage() {
                 بوابتك الرقمية لكل ما تحتاجه. اسألني عن الخدمات الحكومية، الأخبار العاجلة، الإجراءات الرسمية، أو الوظائف المتاحة.
               </p>
 
+              {!isAssistantAvailable && (
+                <div className="w-full max-w-3xl mb-8 rounded-3xl border border-amber-500/20 bg-amber-500/10 px-5 py-4 text-right shadow-lg shadow-amber-500/5">
+                  <div className="flex items-start gap-3">
+                    <AlertCircle size={20} className="shrink-0 mt-0.5" style={{ color: 'var(--accent)' }} />
+                    <div>
+                      <p className="text-sm font-extrabold mb-1" style={{ color: 'var(--text-primary)' }}>تفعيل مطلوب</p>
+                      <p className="text-sm leading-7" style={{ color: 'var(--text-secondary)' }}>
+                        {assistantUnavailableMessage}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Suggestions Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-3xl">
                 {suggestions.map((s, i) => (
@@ -209,7 +237,12 @@ export default function SearchPage() {
                     whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => handleSend(s.text)}
-                    className="group relative overflow-hidden flex items-start gap-4 p-5 rounded-2xl border border-border bg-surface-2/60 backdrop-blur-md text-right transition-all hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 cursor-pointer"
+                    disabled={!isAssistantAvailable}
+                    className={`group relative overflow-hidden flex items-start gap-4 p-5 rounded-2xl border border-border bg-surface-2/60 backdrop-blur-md text-right transition-all ${
+                      isAssistantAvailable
+                        ? 'hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 cursor-pointer'
+                        : 'cursor-not-allowed opacity-55'
+                    }`}
                   >
                     <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     
@@ -362,18 +395,18 @@ export default function SearchPage() {
               onKeyDown={handleKeyDown}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
-              placeholder="ابحث عن معاملة، استفسر عن خدمة، أو اطرح سؤالاً..."
+              placeholder={isAssistantAvailable ? "ابحث عن معاملة، استفسر عن خدمة، أو اطرح سؤالاً..." : "فعّل VITE_GEMINI_API_KEY لتشغيل المساعد الذكي"}
               className="flex-1 bg-transparent text-t1 text-base placeholder:text-t3/80 outline-none resize-none max-h-32 min-h-[52px] py-3.5 px-5 leading-relaxed font-medium z-10 scrollbar-hide"
               rows={input.split('\n').length > 1 ? Math.min(input.split('\n').length, 4) : 1}
-              disabled={isLoading}
+              disabled={!isAssistantAvailable || isLoading}
             />
             
             <div className="flex shrink-0 z-10 pl-1 pb-1">
               <button
                 onClick={() => handleSend(input)}
-                disabled={!input.trim() || isLoading}
+                disabled={!isAssistantAvailable || !input.trim() || isLoading}
                 className={`w-12 h-12 rounded-[1.2rem] flex items-center justify-center shrink-0 transition-all duration-300 ${
-                  input.trim() && !isLoading
+                  isAssistantAvailable && input.trim() && !isLoading
                     ? 'bg-primary text-white shadow-[0_0_20px_rgba(26,107,60,0.4)] hover:bg-primary-light hover:scale-105 active:scale-95'
                     : 'bg-surface-3 border border-border text-t3 opacity-70 cursor-not-allowed'
                 }`}
@@ -391,7 +424,7 @@ export default function SearchPage() {
           </motion.div>
           <p className="text-center text-[12px] text-t3 mt-4 font-semibold tracking-wide drop-shadow-sm flex items-center justify-center gap-1.5">
             <Sparkles size={12} className="text-primary/70" />
-            مساعد فلسطين الذكي - تجريبية. قد يخطئ في بعض المعلومات.
+            {isAssistantAvailable ? 'مساعد فلسطين الذكي - تجريبية. قد يخطئ في بعض المعلومات.' : 'المساعد الذكي يحتاج مفتاح Gemini عبر متغيرات البيئة.'}
             <Sparkles size={12} className="text-primary/70" />
           </p>
         </div>
