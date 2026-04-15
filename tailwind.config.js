@@ -8,65 +8,84 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#1A6B3C',
-          light: '#2A8A50',
-          dark: '#0F4A28',
+          DEFAULT: '#145A32', // Deepened for better contrast
+          hover:   '#0E4424',
+          light:   '#1E8449',
+          50:      '#E9F7EF',
+          100:     '#D4EFDF',
         },
         accent: {
-          DEFAULT: '#D4A017',
-          light: '#F0C040',
+          DEFAULT: '#C07F00',
+          light:   '#E59800',
+          50:      '#FFF8EE',
         },
-        bg: '#0A0F0D',
-        surface: {
-          DEFAULT: '#111A14',
-          2: '#1A2B1E',
-          3: '#243320',
+        bg: {
+          DEFAULT: '#F9F8F6', // Warmer, premium Alabaster
+          card:    '#FFFFFF',
+          section: '#F2EFE9',
+          muted:   '#EBEDEC',
         },
-        't1': '#F0F4F1',
-        't2': '#8FA893',
-        't3': '#566B5C',
-        'pal-red': '#E74C3C',
-        'pal-amber': '#E67E22',
-        'pal-blue': '#2980B9',
-        'pal-purple': '#8E44AD',
-        'green-bright': '#27AE60',
+        text: {
+          primary:   '#171717', // Neutral off-black
+          secondary: '#4F4F4F',
+          muted:     '#737373',
+          light:     '#A3A3A3',
+        },
+        border: {
+          DEFAULT: '#E5E5E5',
+          strong:  '#D4D4D4',
+        },
+        success: '#145A32',
+        error:   '#C0392B',
+        warning: '#C07F00',
+        info:    '#1A5276',
       },
       fontFamily: {
         cairo: ['Cairo', 'sans-serif'],
       },
-      borderColor: {
-        subtle: 'rgba(255,255,255,0.07)',
-        'subtle-hover': 'rgba(255,255,255,0.14)',
+      boxShadow: {
+        // Layered smooth shadows (2025 standard)
+        xs:      '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+        sm:      '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+        md:      '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        lg:      '0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04)',
+        xl:      '0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+        '2xl':   '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
+        card:    '0 4px 24px -4px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04)',
+        island:  '0 12px 32px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.04)',
+      },
+      borderRadius: {
+        sm:  '8px',
+        md:  '12px',
+        lg:  '20px',
+        xl:  '24px',
+        '2xl': '32px',
+        '3xl': '40px',
       },
       animation: {
         'float': 'float 6s ease-in-out infinite',
-        'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
-        'bounce-slow': 'bounce 2s infinite',
-        'mesh': 'mesh 20s ease-in-out infinite',
-        'particle': 'particle-drift 15s ease-in-out infinite',
+        'spin-slow': 'spin 3s linear infinite',
+        'fade-in': 'fadeIn 0.4s ease both',
+        'slide-up': 'slideUp 0.5s ease both',
       },
       keyframes: {
         float: {
           '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-10px)' },
+          '50%': { transform: 'translateY(-8px)' },
         },
-        'pulse-glow': {
-          '0%, 100%': { boxShadow: '0 0 5px rgba(26,107,60,0.5)' },
-          '50%': { boxShadow: '0 0 20px rgba(26,107,60,0.8), 0 0 40px rgba(26,107,60,0.4)' },
+        fadeIn: {
+          from: { opacity: '0' },
+          to:   { opacity: '1' },
         },
-        mesh: {
-          '0%': { backgroundPosition: '0% 50%' },
-          '50%': { backgroundPosition: '100% 50%' },
-          '100%': { backgroundPosition: '0% 50%' },
-        },
-        'particle-drift': {
-          '0%': { transform: 'translate(0, 0)', opacity: '0.3' },
-          '25%': { transform: 'translate(30px, -50px)', opacity: '0.5' },
-          '50%': { transform: 'translate(-20px, -100px)', opacity: '0.3' },
-          '75%': { transform: 'translate(40px, -50px)', opacity: '0.5' },
-          '100%': { transform: 'translate(0, 0)', opacity: '0.3' },
+        slideUp: {
+          from: { opacity: '0', transform: 'translateY(16px)' },
+          to:   { opacity: '1', transform: 'translateY(0)' },
         },
       },
+      transitionTimingFunction: {
+        'spring': 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
+      }
     },
   },
   plugins: [],
