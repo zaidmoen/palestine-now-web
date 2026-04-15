@@ -3,158 +3,184 @@ import { Link } from 'react-router-dom';
 import {
   Search, GraduationCap, Briefcase, Heart,
   MapPin, Newspaper, AlertTriangle, TrendingUp,
-  ArrowLeft
+  ArrowUpRight, Sparkles
 } from 'lucide-react';
 
 const services = [
   {
+    id: 'search',
     icon: Search,
-    title: 'بحث ذكي',
-    description: 'محرك بحث ذكي بالذكاء الاصطناعي يجيب على جميع أسئلتك',
+    title: 'بحث فلسطيني ذكي',
+    description: 'محرك بحث متطور مدعوم بالذكاء الاصطناعي لفهم أسئلتك اليومية وتحليلها لتقديم إجابات سريعة وموثوقة من مصادر فلسطينية.',
     to: '/search',
-    gradient: 'from-emerald-500/20 to-teal-500/20',
-    iconColor: 'text-emerald-400',
-    borderColor: 'hover:border-emerald-500/30',
+    color: '#145A32',
+    bg: '#E9F7EF',
+    colSpan: 'col-span-1 lg:col-span-2 row-span-2', // Large feature card
+    highlight: true,
   },
   {
-    icon: GraduationCap,
-    title: 'طلاب',
-    description: 'منح دراسية، نتائج، وموارد تعليمية للطلاب الفلسطينيين',
-    to: '/students',
-    gradient: 'from-blue-500/20 to-indigo-500/20',
-    iconColor: 'text-blue-400',
-    borderColor: 'hover:border-blue-500/30',
-  },
-  {
-    icon: Briefcase,
-    title: 'وظائف',
-    description: 'فرص عمل يومية محدّثة في جميع المدن الفلسطينية',
-    to: '/jobs',
-    gradient: 'from-amber-500/20 to-orange-500/20',
-    iconColor: 'text-amber-400',
-    borderColor: 'hover:border-amber-500/30',
-  },
-  {
-    icon: TrendingUp,
-    title: 'اقتصاد',
-    description: 'أسعار العملات والذهب والأسهم لحظة بلحظة',
-    to: '/economy',
-    gradient: 'from-green-500/20 to-lime-500/20',
-    iconColor: 'text-green-400',
-    borderColor: 'hover:border-green-500/30',
-  },
-  {
-    icon: Heart,
-    title: 'تكافل',
-    description: 'حملات تبرع وتكافل لدعم العائلات المحتاجة',
-    to: '/solidarity',
-    gradient: 'from-rose-500/20 to-pink-500/20',
-    iconColor: 'text-rose-400',
-    borderColor: 'hover:border-rose-500/30',
-  },
-  {
-    icon: MapPin,
-    title: 'طرق',
-    description: 'حالة الطرق والحواجز محدّثة لحظة بلحظة',
-    to: '/roads',
-    gradient: 'from-cyan-500/20 to-sky-500/20',
-    iconColor: 'text-cyan-400',
-    borderColor: 'hover:border-cyan-500/30',
-  },
-  {
+    id: 'news',
     icon: Newspaper,
-    title: 'أخبار',
-    description: 'آخر الأخبار المحلية والعالمية المتعلقة بفلسطين',
+    title: 'الأخبار العاجلة',
+    description: 'تغطية مستمرة على مدار الساعة لأهم الأحداث.',
     to: '/news',
-    gradient: 'from-violet-500/20 to-purple-500/20',
-    iconColor: 'text-violet-400',
-    borderColor: 'hover:border-violet-500/30',
+    color: '#4A235A',
+    bg: '#F5EEF8',
+    colSpan: 'col-span-1',
   },
   {
+    id: 'jobs',
+    icon: Briefcase,
+    title: 'فرص العمل',
+    description: 'أحدث الوظائف الشاغرة في جميع المحافظات.',
+    to: '/jobs',
+    color: '#935116',
+    bg: '#FEF5E7',
+    colSpan: 'col-span-1',
+  },
+  {
+    id: 'roads',
+    icon: MapPin,
+    title: 'حالة الطرق',
+    description: 'تحديثات حية لحالة الحواجز والمعابر.',
+    to: '/roads',
+    color: '#0E6251',
+    bg: '#E8F8F5',
+    colSpan: 'col-span-1 lg:col-span-2', // Wide card
+  },
+  {
+    id: 'students',
+    icon: GraduationCap,
+    title: 'شؤون الطلاب',
+    description: 'منح وقروض ونتائج امتحانات.',
+    to: '/students',
+    color: '#154360',
+    bg: '#EAF2F8',
+    colSpan: 'col-span-1',
+  },
+  {
+    id: 'economy',
+    icon: TrendingUp,
+    title: 'الاقتصاد اليومي',
+    description: 'أسعار العملات والذهب مباشر.',
+    to: '/economy',
+    color: '#186A3B',
+    bg: '#EAFBEE',
+    colSpan: 'col-span-1',
+  },
+  {
+    id: 'solidarity',
+    icon: Heart,
+    title: 'تكافل المجتمع',
+    description: 'حملات التبرع والمساعدات.',
+    to: '/solidarity',
+    color: '#78281F',
+    bg: '#FDEDEC',
+    colSpan: 'col-span-1',
+  },
+  {
+    id: 'emergency',
     icon: AlertTriangle,
-    title: 'طوارئ',
-    description: 'أرقام الطوارئ والخدمات العاجلة متاحة دائمًا',
+    title: 'دليل الطوارئ',
+    description: 'أرقام سريعة للإسعاف والدفاع المدني.',
     to: '/emergency',
-    gradient: 'from-red-500/20 to-rose-500/20',
-    iconColor: 'text-red-400',
-    borderColor: 'hover:border-red-500/30',
+    color: '#922B21',
+    bg: '#FADBD8',
+    colSpan: 'col-span-1 lg:col-span-2', // Wide card
   },
 ];
 
 const containerVariants = {
   hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.08 },
-  },
+  visible: { transition: { staggerChildren: 0.1 } },
 };
 
 const cardVariants = {
-  hidden: { opacity: 0, y: 30, scale: 0.95 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
-  },
+  hidden: { opacity: 0, scale: 0.95, y: 20 },
+  visible: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 25 } },
 };
 
 export default function ServicesGrid() {
   return (
-    <section className="relative py-20 md:py-28" id="services">
-      {/* Section Header */}
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
+    <section className="relative py-24 md:py-32" id="services" style={{ background: 'var(--bg-section)' }}>
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
+
+        {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-14"
+          viewport={{ once: true, margin: '-100px' }}
+          className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16"
         >
-          <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary-light text-xs font-bold mb-4 border border-primary/20">
-            خدماتنا
-          </span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-t1 mb-4">
-            كل ما تحتاجه في <span className="gradient-text">مكان واحد</span>
-          </h2>
-          <p className="text-t2 text-base md:text-lg max-w-lg mx-auto">
-            خدمات شاملة مصممة خصيصًا لتلبية احتياجات المواطن الفلسطيني اليومية
-          </p>
+          <div className="max-w-2xl">
+            <h2 className="text-fluid-h2 font-black mb-4 text-text-primary leading-tight">
+              جميع خدماتك <br/>
+              <span className="gradient-text">في واجهة واحدة</span>
+            </h2>
+            <p className="text-fluid-body text-text-secondary">
+              تصميم منظم وسريع يضع أهم احتياجات المواطن الفلسطيني بين يديه دون تعقيد.
+            </p>
+          </div>
+          
+          <Link to="/services" className="btn-secondary h-12 px-6 w-fit md:mb-2">
+            استعراض كل الخدمات
+          </Link>
         </motion.div>
 
-        {/* Cards Grid */}
+        {/* Bento Grid */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-50px' }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 auto-rows-[minmax(180px,auto)]"
         >
           {services.map((service) => {
             const Icon = service.icon;
             return (
-              <motion.div key={service.to} variants={cardVariants}>
+              <motion.div key={service.id} variants={cardVariants} className={service.colSpan}>
                 <Link
                   to={service.to}
-                  className={`service-card group block p-5 md:p-6 rounded-2xl border border-subtle transition-all duration-300 ${service.borderColor}`}
+                  className={`group relative flex flex-col h-full rounded-[32px] p-8 overflow-hidden transition-all duration-300 hover:-translate-y-1 ${
+                    service.highlight ? 'bg-primary border-transparent' : 'bg-bg-card border border-border shadow-sm hover:shadow-lg'
+                  }`}
+                  style={service.highlight ? { boxShadow: '0 20px 40px -10px rgba(20,90,50,0.3)' } : {}}
                 >
-                  {/* Icon */}
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110`}>
-                    <Icon size={22} className={service.iconColor} />
+                  {/* Decorative background for highlight card */}
+                  {service.highlight && (
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+                  )}
+
+                  {/* Header: Icon + Arrow */}
+                  <div className="flex justify-between items-start mb-6 relative z-10">
+                    <div
+                      className="w-14 h-14 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110"
+                      style={{ background: service.highlight ? 'rgba(255,255,255,0.1)' : service.bg }}
+                    >
+                      <Icon size={26} style={{ color: service.highlight ? '#FFF' : service.color }} />
+                    </div>
+                    
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                      service.highlight ? 'bg-white/10 text-white group-hover:bg-white group-hover:text-primary' : 'bg-bg-muted text-text-muted group-hover:bg-primary group-hover:text-white'
+                    }`}>
+                      <ArrowUpRight size={20} className="group-hover:rotate-45 transition-transform" />
+                    </div>
                   </div>
 
-                  {/* Title */}
-                  <h3 className="text-lg font-bold text-t1 mb-2 flex items-center gap-2">
-                    {service.title}
-                    <ArrowLeft size={14} className="text-t3 opacity-0 -translate-x-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0" />
-                  </h3>
-
-                  {/* Description */}
-                  <p className="text-sm text-t2 leading-relaxed">
-                    {service.description}
-                  </p>
-
-                  {/* Hover glow effect */}
-                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${service.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-xl`} />
+                  {/* Content */}
+                  <div className="mt-auto relative z-10">
+                    {service.highlight && (
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-white text-xs font-bold mb-4 backdrop-blur-md">
+                        <Sparkles size={12} /> الخدمة الأبرز
+                      </div>
+                    )}
+                    <h3 className={`text-2xl font-black mb-3 ${service.highlight ? 'text-white' : 'text-text-primary'}`}>
+                      {service.title}
+                    </h3>
+                    <p className={`text-base leading-relaxed ${service.highlight ? 'text-white/80' : 'text-text-secondary'}`}>
+                      {service.description}
+                    </p>
+                  </div>
                 </Link>
               </motion.div>
             );
