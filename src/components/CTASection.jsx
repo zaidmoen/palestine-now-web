@@ -1,27 +1,51 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Sparkles, Download } from 'lucide-react';
+import { ArrowLeft, Download, Users } from 'lucide-react';
 
 export default function CTASection() {
   return (
-    <section className="relative py-20 md:py-28 overflow-hidden" id="cta">
-      {/* Background orbs */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute w-[500px] h-[500px] rounded-full bg-primary/10 blur-[120px] -top-40 -right-40" />
-        <div className="absolute w-[400px] h-[400px] rounded-full bg-accent/5 blur-[100px] -bottom-20 -left-40" />
-      </div>
+    <section
+      className="relative py-20 md:py-28 overflow-hidden"
+      id="cta"
+      style={{ background: 'var(--bg-section)' }}
+    >
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 pattern-dots opacity-50 pointer-events-none" />
 
-      <div className="relative max-w-[900px] mx-auto px-4 sm:px-6">
+      {/* Green blob */}
+      <div
+        className="absolute -top-40 -left-40 w-80 h-80 rounded-full pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle, rgba(27,107,58,0.07), transparent 70%)',
+          filter: 'blur(50px)',
+        }}
+      />
+      <div
+        className="absolute -bottom-20 -right-20 w-64 h-64 rounded-full pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle, rgba(196,123,43,0.06), transparent 70%)',
+          filter: 'blur(50px)',
+        }}
+      />
+
+      <div className="relative max-w-[860px] mx-auto px-4 sm:px-6">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 28 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.7 }}
-          className="relative p-8 md:p-14 rounded-3xl border border-primary/20 bg-gradient-to-br from-surface via-primary/[0.04] to-surface overflow-hidden text-center"
+          className="relative rounded-3xl p-8 md:p-14 text-center overflow-hidden"
+          style={{
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border)',
+            boxShadow: 'var(--shadow-xl)',
+          }}
         >
-          {/* Decorative gradient ring */}
-          <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full border border-primary/10 opacity-50" />
-          <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full border border-accent/10 opacity-50" />
+          {/* Top accent line */}
+          <div
+            className="absolute top-0 left-10 right-10 h-1 rounded-b-full"
+            style={{ background: 'linear-gradient(90deg, var(--primary), var(--accent))' }}
+          />
 
           {/* Badge */}
           <motion.div
@@ -29,41 +53,44 @@ export default function CTASection() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8"
+            className="badge-primary mx-auto w-fit mb-8"
           >
-            <Sparkles size={14} className="text-accent" />
-            <span className="text-sm font-bold text-primary-light">انضم لآلاف المستخدمين</span>
+            <Users size={14} />
+            انضم لآلاف المستخدمين
           </motion.div>
 
           {/* Title */}
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-t1 mb-5 leading-tight">
+          <h2
+            className="text-3xl md:text-4xl lg:text-5xl font-black mb-5 leading-tight"
+            style={{ color: 'var(--text-primary)' }}
+          >
             جاهز تبدأ استخدام{' '}
             <span className="gradient-text">فلسطين الآن</span>؟
           </h2>
 
           {/* Description */}
-          <p className="text-t2 text-base md:text-lg max-w-xl mx-auto mb-10 leading-relaxed">
-            سجّل حسابك المجاني اليوم واستفد من جميع الخدمات الفلسطينية في 
-            مكان واحد. المنصة متاحة على الويب وقريبًا على الهواتف الذكية.
+          <p
+            className="text-base md:text-lg max-w-xl mx-auto mb-10 leading-relaxed"
+            style={{ color: 'var(--text-secondary)' }}
+          >
+            سجّل حسابك المجاني اليوم واستفد من جميع الخدمات الفلسطينية في مكان واحد.
+            المنصة متاحة على الويب وقريبًا على الهواتف الذكية.
           </p>
 
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              to="/login"
-              className="btn-primary text-base font-bold group"
-            >
-              <span>سجّل الآن مجانًا</span>
-              <ArrowLeft size={18} className="transition-transform group-hover:-translate-x-1" />
+            <Link to="/login" className="btn-primary text-base">
+              سجّل الآن مجانًا
+              <ArrowLeft size={17} />
             </Link>
-            <button className="btn-secondary text-base gap-2">
+            <button className="btn-ghost text-base gap-2">
               <Download size={16} />
-              <span>حمّل التطبيق قريبًا</span>
+              حمّل التطبيق قريبًا
             </button>
           </div>
 
-          {/* Bottom trust text */}
-          <p className="mt-8 text-xs text-t3">
+          {/* Trust line */}
+          <p className="mt-8 text-xs" style={{ color: 'var(--text-light)' }}>
             لا حاجة لبطاقة ائتمان · مجاني بالكامل · يمكنك الإلغاء في أي وقت
           </p>
         </motion.div>
