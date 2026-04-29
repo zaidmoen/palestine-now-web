@@ -5,24 +5,27 @@ import Navbar from './components/Navbar'
 import ScrollProgress from './components/ScrollProgress'
 import ScrollToTop from './components/ScrollToTop'
 
-const HomePage = lazy(() => import('./pages/HomePage'))
-const LoginPage = lazy(() => import('./pages/LoginPage'))
-const NewsPage = lazy(() => import('./pages/NewsPage'))
-const SearchPage = lazy(() => import('./pages/SearchPage'))
-const StudentsPage = lazy(() => import('./pages/StudentsPage'))
-const JobsPage = lazy(() => import('./pages/JobsPage'))
-const EconomyPage = lazy(() => import('./pages/EconomyPage'))
+const HomePage       = lazy(() => import('./pages/HomePage'))
+const LoginPage      = lazy(() => import('./pages/LoginPage'))
+const NewsPage       = lazy(() => import('./pages/NewsPage'))
+const SearchPage     = lazy(() => import('./pages/SearchPage'))
+const StudentsPage   = lazy(() => import('./pages/StudentsPage'))
+const JobsPage       = lazy(() => import('./pages/JobsPage'))
+const EconomyPage    = lazy(() => import('./pages/EconomyPage'))
 const SolidarityPage = lazy(() => import('./pages/SolidarityPage'))
-const RoadsPage = lazy(() => import('./pages/RoadsPage'))
-const EmergencyPage = lazy(() => import('./pages/EmergencyPage'))
-const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
+const RoadsPage      = lazy(() => import('./pages/RoadsPage'))
+const EmergencyPage  = lazy(() => import('./pages/EmergencyPage'))
+const NotFoundPage   = lazy(() => import('./pages/NotFoundPage'))
 
 function Layout({ children }) {
   const location = useLocation()
   const hideNavbar = ['/login', '/register'].includes(location.pathname)
 
   return (
-    <div className="min-h-screen w-full" style={{ background: 'var(--bg)', color: 'var(--text-primary)' }}>
+    <div
+      className="min-h-screen w-full"
+      style={{ background: 'var(--bg)', color: 'var(--text-primary)' }}
+    >
       <ScrollProgress />
       <ScrollToTop />
       {!hideNavbar && <Navbar />}
@@ -33,9 +36,20 @@ function Layout({ children }) {
 
 function RouteFallback() {
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg)' }}>
-      <div className="flex flex-col items-center gap-4 px-6 text-center">
-        <div className="preloader-spinner" />
+    <div
+      className="min-h-screen flex items-center justify-center"
+      style={{ background: 'var(--bg)' }}
+    >
+      <div className="flex flex-col items-center gap-6 px-6 text-center">
+        {/* Spinner */}
+        <div className="relative">
+          <div className="preloader-ring" />
+          <div
+            className="absolute inset-0 flex items-center justify-center text-2xl"
+          >
+            🇵🇸
+          </div>
+        </div>
         <p className="text-sm font-bold" style={{ color: 'var(--text-muted)' }}>
           جارٍ تحميل الصفحة...
         </p>
@@ -47,8 +61,22 @@ function RouteFallback() {
 function App() {
   const [loading, setLoading] = useState(true)
 
+  /* ── Initialize AOS (Animate On Scroll) ── */
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1800)
+    if (window.AOS) {
+      window.AOS.init({
+        duration: 700,
+        easing: 'ease-out-cubic',
+        once: true,
+        offset: 60,
+        delay: 0,
+      })
+    }
+  }, [])
+
+  /* ── Preloader timer ── */
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 2200)
     return () => clearTimeout(timer)
   }, [])
 
