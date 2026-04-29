@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Clock3, MapPin, Newspaper, Radio } from 'lucide-react';
+import { ArrowLeft, Clock3, MapPin, Newspaper, Radio, Zap } from 'lucide-react';
 import { newsItems } from '../data/news';
 
 const previewNews = newsItems.slice(0, 5);
@@ -19,27 +19,39 @@ export default function NewsSection() {
 
   return (
     <section
-      className="relative py-20 md:py-28"
+      className="relative section-padding"
       id="news"
-      style={{ background: 'var(--bg)' }}
+      style={{ background: 'var(--bg-card)' }}
     >
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
+      {/* Grid pattern */}
+      <div className="absolute inset-0 pattern-grid opacity-30 pointer-events-none" />
+
+      {/* Ambient blob */}
+      <div
+        className="absolute top-0 right-0 w-96 h-96 pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle, rgba(255,71,87,0.06), transparent 70%)',
+          filter: 'blur(80px)',
+        }}
+      />
+
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 relative z-10">
 
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 18 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.7 }}
           className="mb-14 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between"
         >
           <div className="max-w-2xl">
             <div
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-4"
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-5"
               style={{
-                background: '#FDEDEC',
-                color: 'var(--error)',
-                border: '1px solid #F5B7B1',
+                background: 'rgba(255,71,87,0.1)',
+                color: 'var(--red)',
+                border: '1px solid rgba(255,71,87,0.25)',
               }}
             >
               <Newspaper size={12} />
@@ -57,35 +69,39 @@ export default function NewsSection() {
             </p>
           </div>
 
-          <Link
-            to="/news"
-            className="btn-primary"
-          >
+          <Link to="/news" className="btn-primary shrink-0">
             صفحة الأخبار الكاملة
             <ArrowLeft size={16} />
           </Link>
         </motion.div>
 
         {/* Two-column layout */}
-        <div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
 
-          {/* Featured card */}
+          {/* ── Featured Card ── */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 24 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="relative overflow-hidden rounded-2xl p-7 md:p-9"
+            transition={{ duration: 0.65 }}
+            className="relative overflow-hidden rounded-[28px] p-7 md:p-10"
             style={{
-              background: 'var(--bg-card)',
+              background: 'var(--bg-surface)',
               border: '1px solid var(--border)',
-              boxShadow: 'var(--shadow-md)',
             }}
           >
-            {/* Subtle top color bar from news category */}
+            {/* Top neon line */}
             <div
-              className="absolute top-0 left-0 right-0 h-1"
-              style={{ background: 'linear-gradient(90deg, var(--primary), var(--accent))' }}
+              className="absolute top-0 left-0 right-0 h-px"
+              style={{ background: 'linear-gradient(90deg, var(--red), var(--primary), var(--accent))' }}
+            />
+
+            {/* Ambient glow from the color bar */}
+            <div
+              className="absolute top-0 left-0 right-0 h-20 pointer-events-none"
+              style={{
+                background: 'linear-gradient(180deg, rgba(255,71,87,0.04), transparent)',
+              }}
             />
 
             <div className="relative">
@@ -100,22 +116,29 @@ export default function NewsSection() {
                 {activeItem.isBreaking && (
                   <span
                     className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold"
-                    style={{ background: '#FDEDEC', color: 'var(--error)', border: '1px solid #F5B7B1' }}
+                    style={{
+                      background: 'rgba(255,71,87,0.12)',
+                      color: 'var(--red)',
+                      border: '1px solid rgba(255,71,87,0.25)',
+                    }}
                   >
-                    <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: 'var(--error)' }} />
+                    <span
+                      className="w-1.5 h-1.5 rounded-full animate-pulse"
+                      style={{ background: 'var(--red)', boxShadow: '0 0 6px var(--red)' }}
+                    />
                     تحديث حي
                   </span>
                 )}
               </div>
 
-              {/* Content */}
+              {/* Animated Content */}
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeItem.id}
-                  initial={{ opacity: 0, y: 14, filter: 'blur(4px)' }}
+                  initial={{ opacity: 0, y: 16, filter: 'blur(4px)' }}
                   animate={{ opacity: 1, y: 0, filter: 'blur(0)' }}
                   exit={{ opacity: 0, y: -10, filter: 'blur(3px)' }}
-                  transition={{ duration: 0.26 }}
+                  transition={{ duration: 0.3 }}
                 >
                   <h3
                     className="text-2xl font-extrabold leading-snug md:text-3xl mb-4"
@@ -123,22 +146,33 @@ export default function NewsSection() {
                   >
                     {activeItem.title}
                   </h3>
-                  <p className="text-sm leading-8 md:text-base mb-5" style={{ color: 'var(--text-secondary)' }}>
+                  <p
+                    className="text-sm leading-8 md:text-base mb-5"
+                    style={{ color: 'var(--text-secondary)' }}
+                  >
                     {activeItem.excerpt}
                   </p>
 
-                  {/* Meta */}
+                  {/* Meta tags */}
                   <div className="flex flex-wrap gap-2 mb-5">
                     <span
                       className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold"
-                      style={{ background: 'var(--bg-section)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}
+                      style={{
+                        background: 'rgba(255,255,255,0.04)',
+                        color: 'var(--text-muted)',
+                        border: '1px solid var(--border)',
+                      }}
                     >
                       <Clock3 size={12} />
                       {activeItem.time}
                     </span>
                     <span
                       className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold"
-                      style={{ background: 'var(--bg-section)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}
+                      style={{
+                        background: 'rgba(255,255,255,0.04)',
+                        color: 'var(--text-muted)',
+                        border: '1px solid var(--border)',
+                      }}
                     >
                       <MapPin size={12} />
                       {activeItem.location}
@@ -150,12 +184,19 @@ export default function NewsSection() {
                     {activeItem.bullets.slice(0, 2).map((bullet) => (
                       <div
                         key={bullet}
-                        className="flex items-start gap-2.5 rounded-xl px-4 py-3 text-sm leading-relaxed"
-                        style={{ background: 'var(--bg-section)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}
+                        className="flex items-start gap-3 rounded-xl px-4 py-3 text-sm leading-relaxed"
+                        style={{
+                          background: 'rgba(0,230,118,0.04)',
+                          border: '1px solid rgba(0,230,118,0.1)',
+                          color: 'var(--text-secondary)',
+                        }}
                       >
                         <span
                           className="mt-2 w-1.5 h-1.5 rounded-full shrink-0"
-                          style={{ background: 'var(--primary)' }}
+                          style={{
+                            background: 'var(--primary)',
+                            boxShadow: '0 0 6px var(--primary)',
+                          }}
                         />
                         {bullet}
                       </div>
@@ -165,7 +206,7 @@ export default function NewsSection() {
               </AnimatePresence>
 
               {/* Progress dots + link */}
-              <div className="mt-7 flex items-center justify-between gap-4">
+              <div className="mt-8 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-1.5">
                   {previewNews.map((_, i) => (
                     <button
@@ -175,15 +216,16 @@ export default function NewsSection() {
                       style={{
                         width: activeIndex === i ? 28 : 6,
                         background: activeIndex === i ? 'var(--primary)' : 'var(--border-strong)',
+                        boxShadow: activeIndex === i ? '0 0 8px var(--primary)' : 'none',
                       }}
-                      aria-label={`عرض ${previewNews[i].title}`}
+                      aria-label={`عرض الخبر ${i + 1}`}
                     />
                   ))}
                 </div>
 
                 <Link
                   to="/news"
-                  className="inline-flex items-center gap-1.5 text-sm font-bold transition-colors"
+                  className="inline-flex items-center gap-1.5 text-sm font-bold transition-all"
                   style={{ color: 'var(--primary)' }}
                   onMouseEnter={e => e.currentTarget.style.color = 'var(--accent)'}
                   onMouseLeave={e => e.currentTarget.style.color = 'var(--primary)'}
@@ -195,12 +237,12 @@ export default function NewsSection() {
             </div>
           </motion.div>
 
-          {/* Sidebar list */}
+          {/* ── Sidebar List ── */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: -24 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.15 }}
+            transition={{ duration: 0.65, delay: 0.15 }}
             className="space-y-3"
           >
             {previewNews.map((item, index) => (
@@ -208,20 +250,24 @@ export default function NewsSection() {
                 key={item.id}
                 type="button"
                 onClick={() => setActiveIndex(index)}
-                className="w-full rounded-xl text-right transition-all duration-250 p-4"
+                className="w-full rounded-[20px] text-right transition-all duration-250 p-4 group"
                 style={{
-                  background: index === activeIndex ? 'var(--primary-50)' : 'var(--bg-card)',
-                  border: `1px solid ${index === activeIndex ? 'var(--primary-100)' : 'var(--border)'}`,
-                  boxShadow: index === activeIndex ? '0 4px 16px rgba(27,107,58,0.1)' : 'var(--shadow-sm)',
+                  background: index === activeIndex
+                    ? 'rgba(0,230,118,0.07)'
+                    : 'var(--bg-surface)',
+                  border: `1px solid ${index === activeIndex ? 'rgba(0,230,118,0.2)' : 'var(--border)'}`,
+                  boxShadow: index === activeIndex ? '0 0 20px rgba(0,230,118,0.1)' : 'none',
                 }}
                 onMouseEnter={e => {
                   if (index !== activeIndex) {
-                    e.currentTarget.style.background = 'var(--bg-section)';
+                    e.currentTarget.style.borderColor = 'var(--border-strong)';
+                    e.currentTarget.style.transform = 'translateX(-3px)';
                   }
                 }}
                 onMouseLeave={e => {
                   if (index !== activeIndex) {
-                    e.currentTarget.style.background = 'var(--bg-card)';
+                    e.currentTarget.style.borderColor = 'var(--border)';
+                    e.currentTarget.style.transform = 'translateX(0)';
                   }
                 }}
               >
@@ -230,22 +276,30 @@ export default function NewsSection() {
                   <span className={`inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-bold ${item.categoryClassName}`}>
                     {item.category}
                   </span>
-                  <div className="flex items-center gap-1.5 text-[11px] font-semibold" style={{ color: 'var(--text-light)' }}>
-                    {item.isBreaking && <Radio size={12} style={{ color: 'var(--error)' }} />}
+                  <div
+                    className="flex items-center gap-1.5 text-[11px] font-semibold"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
+                    {item.isBreaking && (
+                      <Radio size={11} style={{ color: 'var(--red)' }} />
+                    )}
                     <span>{item.time}</span>
                   </div>
                 </div>
 
                 {/* Title */}
                 <h3
-                  className="text-[15px] font-bold leading-snug mb-2"
+                  className="text-[15px] font-bold leading-snug mb-2 transition-colors"
                   style={{ color: index === activeIndex ? 'var(--primary)' : 'var(--text-primary)' }}
                 >
                   {item.title}
                 </h3>
 
                 {/* Excerpt */}
-                <p className="text-xs line-clamp-2 leading-relaxed mb-3" style={{ color: 'var(--text-muted)' }}>
+                <p
+                  className="text-xs line-clamp-2 leading-relaxed mb-3"
+                  style={{ color: 'var(--text-muted)' }}
+                >
                   {item.excerpt}
                 </p>
 
@@ -254,7 +308,10 @@ export default function NewsSection() {
                   className="flex items-center justify-between pt-3"
                   style={{ borderTop: '1px solid var(--border)' }}
                 >
-                  <span className="inline-flex items-center gap-1.5 text-xs" style={{ color: 'var(--text-light)' }}>
+                  <span
+                    className="inline-flex items-center gap-1.5 text-xs"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
                     <MapPin size={11} />
                     {item.location}
                   </span>
