@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Search, MapPin, Briefcase, Zap, ShieldCheck } from 'lucide-react';
+import { Search, MapPin, Briefcase, Zap, ShieldCheck, Sparkles } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
 /* ── Typewriter ── */
@@ -31,10 +31,10 @@ function useTypewriter(words, typingSpeed = 90, deletingSpeed = 50, pauseDuratio
 }
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 32 },
+  hidden: { opacity: 0, y: 40 },
   visible: (i) => ({
     opacity: 1, y: 0,
-    transition: { delay: 0.1 * i, duration: 0.8, ease: [0.16, 1, 0.3, 1] },
+    transition: { delay: 0.1 * i, duration: 0.9, ease: [0.16, 1, 0.3, 1] },
   }),
 };
 
@@ -42,6 +42,61 @@ export default function HeroSection() {
   const typed = useTypewriter(typewriterWords);
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
+  const particlesRef = useRef(null);
+
+  useEffect(() => {
+    // Initialize tsParticles
+    if (window.tsParticles) {
+      window.tsParticles.load({
+        id: 'tsparticles',
+        options: {
+          fullScreen: false,
+          background: { color: { value: 'transparent' } },
+          fpsLimit: 60,
+          particles: {
+            number: { value: 55, density: { enable: true, value_area: 900 } },
+            color: { value: ['#00E676', '#FFD700', '#FFFFFF', '#00B4D8'] },
+            shape: { type: 'circle' },
+            opacity: {
+              value: 0.4,
+              random: true,
+              animation: { enable: true, speed: 0.8, minimumValue: 0.1, sync: false },
+            },
+            size: {
+              value: 2.5,
+              random: true,
+              animation: { enable: true, speed: 2, minimumValue: 0.5, sync: false },
+            },
+            links: {
+              enable: true,
+              distance: 140,
+              color: '#00E676',
+              opacity: 0.08,
+              width: 1,
+            },
+            move: {
+              enable: true,
+              speed: 0.6,
+              direction: 'none',
+              random: true,
+              straight: false,
+              outMode: 'out',
+            },
+          },
+          interactivity: {
+            events: {
+              onhover: { enable: true, mode: 'grab' },
+              onclick: { enable: false },
+            },
+            modes: {
+              grab: { distance: 160, links: { opacity: 0.25 } },
+            },
+          },
+          detectRetina: true,
+        },
+      });
+    }
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -51,22 +106,47 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-24 lg:pt-40 lg:pb-32">
-      {/* ── Background Mesh ── */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="hero-blob-1 opacity-70" />
-        <div className="hero-blob-2 opacity-50" />
-      </div>
-      <div className="absolute inset-0 pattern-dots opacity-40 pointer-events-none" />
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-24 lg:pt-40 lg:pb-36">
+      
+      {/* ── tsParticles Canvas ── */}
+      <div id="tsparticles" className="absolute inset-0 z-0" />
 
-      {/* ── Main Content Container ── */}
-      <div className="relative z-10 w-full max-w-[1000px] mx-auto px-4 sm:px-6 flex flex-col items-center">
-        
+      {/* ── Grid Pattern ── */}
+      <div className="absolute inset-0 pattern-grid opacity-30 pointer-events-none z-0" />
+
+      {/* ── Ambient Blobs ── */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="hero-blob-1" />
+        <div className="hero-blob-2" />
+        <div className="hero-blob-3" />
+      </div>
+
+      {/* ── Horizontal neon lines decoration ── */}
+      <div className="absolute top-1/3 left-0 right-0 h-px pointer-events-none z-0"
+        style={{ background: 'linear-gradient(90deg, transparent 5%, rgba(0,230,118,0.06) 30%, rgba(0,230,118,0.06) 70%, transparent 95%)' }}
+      />
+
+      {/* ── Main Content ── */}
+      <div className="relative z-10 w-full max-w-[1020px] mx-auto px-4 sm:px-6 flex flex-col items-center text-center">
+
         {/* Badge */}
-        <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible" className="mb-6 lg:mb-8">
-          <div className="badge-primary inline-flex gap-2.5 px-5 py-2 shadow-sm">
-            <ShieldCheck size={16} />
+        <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible" className="mb-7">
+          <div
+            className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full font-bold text-sm"
+            style={{
+              background: 'rgba(0,230,118,0.08)',
+              border: '1px solid rgba(0,230,118,0.2)',
+              color: 'var(--primary)',
+              backdropFilter: 'blur(10px)',
+              boxShadow: '0 0 20px rgba(0,230,118,0.1)',
+            }}
+          >
+            <Sparkles size={15} className="float-anim" style={{ animationDelay: '0s' }} />
             المنصة الموحدة للخدمات الفلسطينية
+            <span
+              className="w-1.5 h-1.5 rounded-full"
+              style={{ background: 'var(--primary)', boxShadow: '0 0 6px var(--primary)', animation: 'pulseDot 1.5s ease-in-out infinite' }}
+            />
           </div>
         </motion.div>
 
@@ -76,10 +156,14 @@ export default function HeroSection() {
           variants={fadeUp}
           initial="hidden"
           animate="visible"
-          className="text-fluid-h1 font-black text-center leading-[1.1] mb-6 tracking-tight text-text-primary"
+          className="text-fluid-h1 font-black text-center leading-[1.08] mb-6 tracking-tight"
+          style={{ color: 'var(--text-primary)' }}
         >
-          اسأل عن <span className="gradient-text">أي شيء</span>, <br className="hidden md:block" />
-          وسنجيبك فوراً.
+          اسأل عن{' '}
+          <span className="gradient-text">أي شيء</span>
+          <br className="hidden md:block" />
+          <span style={{ color: 'rgba(240,246,252,0.7)' }}>وسنجيبك </span>
+          <span style={{ color: 'var(--accent)', textShadow: '0 0 30px rgba(255,215,0,0.4)' }}>فوراً.</span>
         </motion.h1>
 
         {/* Subtitle */}
@@ -88,46 +172,69 @@ export default function HeroSection() {
           variants={fadeUp}
           initial="hidden"
           animate="visible"
-          className="text-fluid-body text-center max-w-2xl text-text-secondary leading-relaxed mb-10 lg:mb-12"
+          className="text-fluid-body text-center max-w-2xl leading-relaxed mb-12"
+          style={{ color: 'var(--text-secondary)' }}
         >
-          مدعوم بالذكاء الاصطناعي لتقديم أدق الإجابات حول الأخبار، الوظائف، والخدمات اليومية في جميع محافظات فلسطين.
+          مدعوم بالذكاء الاصطناعي لتقديم أدق الإجابات حول{' '}
+          <span style={{ color: 'var(--primary)' }}>الأخبار</span>، الوظائف، والخدمات اليومية في جميع محافظات فلسطين.
         </motion.p>
 
-        {/* Interactive Search Bar */}
+        {/* Search Bar */}
         <motion.div
           custom={3}
           variants={fadeUp}
           initial="hidden"
           animate="visible"
-          className="w-full max-w-[760px] relative mb-10"
+          className="w-full max-w-[800px] relative mb-10"
         >
-          <form 
+          <form
             onSubmit={handleSearch}
-            className="flex items-center bg-bg-card border-2 border-border p-2 rounded-[2rem] shadow-island focus-within:border-primary focus-within:ring-4 focus-within:ring-primary-50 transition-all duration-300"
+            className="flex items-center p-2 rounded-[2rem] transition-all duration-300"
+            style={{
+              background: 'rgba(13, 17, 23, 0.85)',
+              border: '1px solid var(--border-strong)',
+              backdropFilter: 'blur(20px)',
+              boxShadow: '0 0 0 0 transparent',
+            }}
+            onFocus={() => {}}
           >
-            <div className="pl-4 pr-3 text-text-muted">
-              <Search size={24} />
+            <div className="pr-4 pl-3" style={{ color: 'var(--primary)' }}>
+              <Search size={22} />
             </div>
+
             <div className="flex-1 relative">
               <input
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                className="w-full h-14 bg-transparent outline-none text-lg text-text-primary placeholder:text-transparent"
+                className="w-full h-14 bg-transparent outline-none text-lg font-medium"
+                style={{ color: 'var(--text-primary)' }}
+                aria-label="حقل البحث"
               />
               <div
-                className={`absolute inset-y-0 right-0 flex items-center pointer-events-none text-lg font-bold text-text-light transition-opacity duration-200 ${query ? 'opacity-0' : 'opacity-100'}`}
+                className={`absolute inset-y-0 right-0 flex items-center pointer-events-none text-base transition-opacity duration-200 ${query ? 'opacity-0' : 'opacity-100'}`}
+                style={{ color: 'var(--text-muted)' }}
               >
-                جرب البحث عن "{typed}<span className="typewriter-cursor">|</span>"
+                جرب البحث عن &quot;{typed}<span className="typewriter-cursor">|</span>&quot;
               </div>
             </div>
+
             <button
               type="submit"
-              className="bg-primary hover:bg-primary-hover text-white px-8 md:px-10 h-14 rounded-[24px] font-black text-lg transition-transform hover:scale-105 active:scale-95 shadow-md"
+              className="btn-primary h-14 px-8 md:px-12 text-lg shrink-0"
             >
               بحث
             </button>
           </form>
+
+          {/* Glow effect under the search bar */}
+          <div
+            className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-3/4 h-8 pointer-events-none"
+            style={{
+              background: 'radial-gradient(ellipse at center, rgba(0,230,118,0.2), transparent 70%)',
+              filter: 'blur(12px)',
+            }}
+          />
         </motion.div>
 
         {/* Quick Suggestions */}
@@ -136,27 +243,78 @@ export default function HeroSection() {
           variants={fadeUp}
           initial="hidden"
           animate="visible"
-          className="flex flex-wrap items-center justify-center gap-3 lg:gap-4 w-full"
+          className="flex flex-wrap items-center justify-center gap-3 w-full"
         >
-          <span className="text-sm font-bold text-text-muted hidden md:inline-block ml-2">الأكثر بحثاً:</span>
-          
-          <Link to="/search?q=وظائف" className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-bg-card border border-border text-sm font-bold text-text-primary hover:border-primary hover:bg-primary-50 hover:text-primary transition-colors shadow-sm">
-            <Briefcase size={14} /> وظائف البنك
-          </Link>
-          
-          <Link to="/search?q=طرق" className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-bg-card border border-border text-sm font-bold text-text-primary hover:border-primary hover:bg-primary-50 hover:text-primary transition-colors shadow-sm">
-            <MapPin size={14} /> حالة حاجز قلنديا
-          </Link>
-          
-          <Link to="/search?q=عاجل" className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-bg-card border border-border text-sm font-bold text-text-primary hover:border-error hover:bg-[#FDEDEC] hover:text-error transition-colors shadow-sm">
-            <Zap size={14} /> أخبار عاجلة
-          </Link>
+          <span className="text-sm font-bold hidden md:inline-block" style={{ color: 'var(--text-muted)' }}>
+            الأكثر بحثاً:
+          </span>
+
+          {[
+            { to: '/search?q=وظائف', icon: Briefcase, label: 'وظائف البنك', color: 'var(--accent)' },
+            { to: '/search?q=طرق', icon: MapPin, label: 'حاجز قلنديا', color: 'var(--blue)' },
+            { to: '/search?q=عاجل', icon: Zap, label: 'أخبار عاجلة', color: 'var(--red)' },
+          ].map(({ to, icon: Icon, label, color }) => (
+            <Link
+              key={to}
+              to={to}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold transition-all duration-200 hover:scale-105"
+              style={{
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid var(--border)',
+                color: 'var(--text-secondary)',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.borderColor = color;
+                e.currentTarget.style.color = color;
+                e.currentTarget.style.background = `${color}15`;
+                e.currentTarget.style.boxShadow = `0 0 12px ${color}30`;
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.borderColor = 'var(--border)';
+                e.currentTarget.style.color = 'var(--text-secondary)';
+                e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
+            >
+              <Icon size={13} />
+              {label}
+            </Link>
+          ))}
         </motion.div>
 
+        {/* Stats inline */}
+        <motion.div
+          custom={5}
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+          className="mt-16 flex flex-wrap items-center justify-center gap-6 md:gap-10"
+        >
+          {[
+            { num: '+5000', label: 'مستخدم' },
+            { num: '+320', label: 'وظيفة' },
+            { num: '+150', label: 'عائلة أُعينت' },
+          ].map(({ num, label }) => (
+            <div key={label} className="flex flex-col items-center">
+              <span
+                className="text-2xl font-black"
+                style={{ color: 'var(--primary)', textShadow: '0 0 20px rgba(0,230,118,0.4)' }}
+              >
+                {num}
+              </span>
+              <span className="text-xs font-semibold mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                {label}
+              </span>
+            </div>
+          ))}
+        </motion.div>
       </div>
-      
-      {/* ── Bottom fade ── */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-bg to-transparent pointer-events-none" />
+
+      {/* Bottom Fade */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-40 pointer-events-none z-[1]"
+        style={{ background: 'linear-gradient(to top, var(--bg), transparent)' }}
+      />
     </section>
   );
 }
