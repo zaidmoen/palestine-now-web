@@ -30,8 +30,12 @@ import {
   governorates,
   interestOptions,
 } from '../data/personalization';
-
-const STORAGE_KEY = 'palestine-now-preferences-v1';
+import {
+  LEGACY_PREFERENCES_STORAGE_KEY,
+  parsePersonalPreferences,
+  PREFERENCES_STORAGE_KEY,
+  serializePersonalPreferences,
+} from '../lib/personalPreferences';
 
 const categoryConfig = {
   أخبار: { icon: Newspaper, color: '#38BDF8', bg: 'rgba(56,189,248,0.10)' },
@@ -54,21 +58,33 @@ function readStoredPreferences() {
   if (typeof window === 'undefined') return defaultPreferences;
 
   try {
-    const stored = JSON.parse(window.localStorage.getItem(STORAGE_KEY));
-    const governorate = governorates.includes(stored?.governorate)
-      ? stored.governorate
-      : defaultPreferences.governorate;
-    const allowedInterests = new Set(interestOptions.map((item) => item.id));
-    const interests = Array.isArray(stored?.interests)
-      ? stored.interests.filter((item) => allowedInterests.has(item))
-      : defaultPreferences.interests;
-
-    return {
-      governorate,
-      interests: interests.length > 0 ? interests : defaultPreferences.interests,
-    };
+    const current = window.localStorage.getItem(PREFERENCES_STORAGE_KEY);
+    const legacy = window.localStorage.getItem(LEGACY_PREFERENCES_STORAGE_KEY);
+    return parsePersonalPreferences(current || legacy);
   } catch {
     return defaultPreferences;
+  }
+}
+
+function persistPreferences(preferences) {
+  try {
+    window.localStorage.setItem(
+      PREFERENCES_STORAGE_KEY,
+      serializePersonalPreferences(preferences),
+    );
+    window.localStorage.removeItem(LEGACY_PREFERENCES_STORAGE_KEY);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function clearStoredPreferences() {
+  try {
+    window.localStorage.removeItem(PREFERENCES_STORAGE_KEY);
+    window.localStorage.removeItem(LEGACY_PREFERENCES_STORAGE_KEY);
+  } catch {
+    // Reset remains effective in memory when storage is unavailable.
   }
 }
 
@@ -173,7 +189,7 @@ export default function MyPalestinePage() {
   const [preferences, setPreferences] = useState(readStoredPreferences);
   const [activeCategory, setActiveCategory] = useState('الكل');
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [saveStatus, setSaveStatus] = useState('idle');
 
   const feed = useMemo(() => buildPersonalFeed(preferences), [preferences]);
   const summary = useMemo(
@@ -191,7 +207,7 @@ export default function MyPalestinePage() {
   const urgentItems = feed.filter((item) => item.urgent);
 
   const toggleInterest = (interest) => {
-    setSaved(false);
+    setSaveStatus('idle');
     setPreferences((current) => {
       const isSelected = current.interests.includes(interest);
       if (isSelected && current.interests.length === 1) return current;
@@ -206,17 +222,16 @@ export default function MyPalestinePage() {
   };
 
   const savePreferences = () => {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences));
-    setSaved(true);
-    setSettingsOpen(false);
-    window.setTimeout(() => setSaved(false), 2500);
+    const didSave = persistPreferences(preferences);
+    setSaveStatus(didSave ? 'saved' : 'error');
+    if (didSave) setSettingsOpen(false);
   };
 
   const resetPreferences = () => {
-    setPreferences(defaultPreferences);
-    window.localStorage.removeItem(STORAGE_KEY);
+    setPreferences({ ...defaultPreferences, interests: [...defaultPreferences.interests] });
+    clearStoredPreferences();
     setActiveCategory('الكل');
-    setSaved(false);
+    setSaveStatus('idle');
   };
 
   return (
@@ -258,11 +273,18 @@ export default function MyPalestinePage() {
                   <p className="text-sm font-black text-primary">منطقتك</p>
                   <p className="mt-1 text-xs font-bold" style={{ color: 'var(--text-muted)' }}>تُحفظ على هذا الجهاز فقط</p>
                 </div>
-                {saved ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-black text-primary">
-                    <Check size={13} /> تم الحفظ
-                  </span>
-                ) : null}
+                <span role="status" aria-live="polite">
+                  {saveStatus === 'saved' ? (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-black text-primary">
+                      <Check size={13} /> تم الحفظ
+                    </span>
+                  ) : null}
+                  {saveStatus === 'error' ? (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-red-400/10 px-3 py-1.5 text-xs font-black text-red-300">
+                      <AlertTriangle size={13} /> تعذّر الحفظ
+                    </span>
+                  ) : null}
+                </span>
               </div>
 
               <div className="relative mt-4">
@@ -271,7 +293,7 @@ export default function MyPalestinePage() {
                   aria-label="اختر المحافظة"
                   value={preferences.governorate}
                   onChange={(event) => {
-                    setSaved(false);
+                    setSaveStatus('idle');
                     setPreferences((current) => ({ ...current, governorate: event.target.value }));
                   }}
                   className="h-14 w-full appearance-none rounded-2xl border bg-transparent pr-12 pl-11 text-base font-black outline-none focus:border-primary"
@@ -378,6 +400,7 @@ export default function MyPalestinePage() {
                     key={category}
                     type="button"
                     onClick={() => setActiveCategory(category)}
+                    aria-pressed={resolvedCategory === category}
                     className="h-10 shrink-0 rounded-full border px-4 text-sm font-black transition-all"
                     style={{
                       background: resolvedCategory === category ? 'var(--primary)' : 'var(--bg-card)',
