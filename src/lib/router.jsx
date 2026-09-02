@@ -34,14 +34,13 @@ export function useSearchParams() {
   const [pathname, navigate] = useWouterLocation();
   const params = useMemo(() => new URLSearchParams(search), [search]);
 
-  const setParams = (nextParams) => {
+  const setParams = (nextParams, options) => {
     const next = nextParams instanceof URLSearchParams
       ? nextParams
       : new URLSearchParams(nextParams);
     const query = next.toString();
-    navigate(query ? `${pathname}?${query}` : pathname);
+    navigate(query ? `${pathname}?${query}` : pathname, options);
   };
 
   return [params, setParams];
 }
-
