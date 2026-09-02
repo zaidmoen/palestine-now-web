@@ -4,12 +4,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Menu, X,
   Home, Search, GraduationCap, Briefcase, TrendingUp,
-  Heart, MapPin, Newspaper, AlertTriangle
+  Heart, MapPin, MapPinned, Newspaper, AlertTriangle
 } from 'lucide-react';
 import EmojiIcon from './EmojiIcon';
 
 const navLinks = [
   { to: '/',          label: 'الرئيسية',  icon: Home },
+  { to: '/my-palestine', label: 'حولي',   icon: MapPinned },
   { to: '/search',    label: 'البحث',     icon: Search },
   { to: '/students',  label: 'طلاب',      icon: GraduationCap },
   { to: '/jobs',      label: 'وظائف',     icon: Briefcase },
@@ -102,7 +103,7 @@ export default function Navbar() {
                   <Link
                     key={link.to}
                     to={link.to}
-                    className="relative px-4 py-2 rounded-full text-[14px] font-bold transition-all duration-200 focus-visible:outline-none"
+                    className="relative px-3 py-2 rounded-full text-[14px] font-bold transition-all duration-200 focus-visible:outline-none"
                     style={{ color: isActive ? 'var(--primary)' : 'var(--text-secondary)' }}
                   >
                     <span className="relative z-10">{link.label}</span>
@@ -132,12 +133,12 @@ export default function Navbar() {
             {/* Actions */}
             <div className="flex items-center gap-2.5 shrink-0">
               <Link
-                to="/search"
+                to="/my-palestine"
                 className="hidden sm:inline-flex items-center justify-center gap-2 h-9 px-5 rounded-full text-sm font-extrabold text-black transition-all hover:scale-105"
                 style={{ background: 'linear-gradient(135deg, var(--primary), #00C853)' }}
               >
-                <Search size={15} />
-                ابحث الآن
+                <MapPinned size={15} />
+                فلسطين حولي
               </Link>
 
               {/* Mobile Hamburger */}

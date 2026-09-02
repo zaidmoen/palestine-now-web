@@ -9,6 +9,7 @@ import AppErrorBoundary from './components/AppErrorBoundary'
 const HomePage       = lazy(() => import('./pages/HomePage'))
 const NewsPage       = lazy(() => import('./pages/NewsPage'))
 const SearchPage     = lazy(() => import('./pages/SearchPage'))
+const MyPalestinePage = lazy(() => import('./pages/MyPalestinePage'))
 const StudentsPage   = lazy(() => import('./pages/StudentsPage'))
 const JobsPage       = lazy(() => import('./pages/JobsPage'))
 const EconomyPage    = lazy(() => import('./pages/EconomyPage'))
@@ -66,6 +67,7 @@ function App() {
         <Routes>
           <Route path="/"          element={<HomePage />} />
           <Route path="/search"    element={<SearchPage />} />
+          <Route path="/my-palestine" element={<MyPalestinePage />} />
           <Route path="/students"  element={<StudentsPage />} />
           <Route path="/jobs"      element={<JobsPage />} />
           <Route path="/economy"   element={<EconomyPage />} />
