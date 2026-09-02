@@ -1,6 +1,6 @@
-import { useDeferredValue, useState } from 'react';
+import { useDeferredValue } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Link } from '../lib/router';
+import { Link, useSearchParams } from '../lib/router';
 import {
   ArrowLeft,
   CheckCircle2,
@@ -16,26 +16,23 @@ import {
   X,
 } from 'lucide-react';
 import { liveUpdates, newsItems, newsMetrics, newsroomHighlights } from '../data/news';
+import { filterNewsItems, sanitizeNewsCategory } from '../lib/newsFilters';
 
 const categories = ['الكل', ...new Set(newsItems.map((item) => item.category))];
 
 export default function NewsPage() {
-  const [activeCategory, setActiveCategory] = useState('الكل');
-  const [query, setQuery] = useState('');
-  const [selectedId, setSelectedId] = useState(newsItems[0].id);
+  const [params, setParams] = useSearchParams();
+  const query = params.get('q') || '';
+  const activeCategory = sanitizeNewsCategory(params.get('category') || 'الكل', categories);
+  const requestedArticleId = params.get('article');
+  const selectedId = newsItems.some((item) => item.id === requestedArticleId)
+    ? requestedArticleId
+    : newsItems[0].id;
   const deferredQuery = useDeferredValue(query);
 
-  const normalizedQuery = deferredQuery.trim().toLowerCase();
-  const filteredItems = newsItems.filter((item) => {
-    const matchesCategory = activeCategory === 'الكل' || item.category === activeCategory;
-    const matchesQuery =
-      normalizedQuery === '' ||
-      [item.title, item.excerpt, item.category, item.location, item.author]
-        .join(' ')
-        .toLowerCase()
-        .includes(normalizedQuery);
-
-    return matchesCategory && matchesQuery;
+  const filteredItems = filterNewsItems(newsItems, {
+    category: activeCategory,
+    query: deferredQuery,
   });
 
   const featuredArticle =
@@ -43,6 +40,15 @@ export default function NewsPage() {
       ? filteredItems.find((item) => item.id === selectedId) ?? filteredItems[0]
       : null;
   const breakingItems = newsItems.filter((item) => item.isBreaking);
+
+  const updateParams = (updates, options = { replace: true }) => {
+    const next = new URLSearchParams(params);
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value) next.set(key, value);
+      else next.delete(key);
+    });
+    setParams(next, options);
+  };
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-bg pt-[88px] font-cairo" dir="rtl">
@@ -107,14 +113,15 @@ export default function NewsPage() {
                   <Search size={18} className="shrink-0 text-t3" />
                   <input
                     value={query}
-                    onChange={(event) => setQuery(event.target.value)}
+                    onChange={(event) => updateParams({ q: event.target.value })}
                     placeholder="ابحث داخل الأخبار حسب العنوان أو المحافظة أو الفئة..."
                     className="w-full bg-transparent text-sm font-medium text-t1 outline-none placeholder:text-t3"
+                    aria-label="ابحث داخل الأخبار"
                   />
                   {query ? (
                     <button
                       type="button"
-                      onClick={() => setQuery('')}
+                      onClick={() => updateParams({ q: null })}
                       className="flex h-8 w-8 items-center justify-center rounded-full bg-white/[0.04] text-t3 transition-colors hover:text-t1"
                       aria-label="مسح البحث"
                     >
@@ -132,7 +139,8 @@ export default function NewsPage() {
                     <button
                       key={category}
                       type="button"
-                      onClick={() => setActiveCategory(category)}
+                      onClick={() => updateParams({ category: category === 'الكل' ? null : category })}
+                      aria-pressed={isActive}
                       className={`rounded-full border px-4 py-2 text-sm font-bold transition-all ${
                         isActive
                           ? 'border-primary/30 bg-primary text-white shadow-[0_12px_30px_rgba(26,107,60,0.24)]'
@@ -240,8 +248,7 @@ export default function NewsPage() {
                     key={item.id}
                     type="button"
                     onClick={() => {
-                      setActiveCategory('الكل');
-                      setSelectedId(item.id);
+                      setParams(new URLSearchParams({ article: item.id }));
                     }}
                     className="inline-flex items-center gap-3 whitespace-nowrap rounded-full border border-white/8 bg-white/[0.03] px-4 py-2 text-sm font-semibold text-t1 transition-all hover:border-pal-red/20 hover:text-pal-red"
                   >
@@ -386,7 +393,7 @@ export default function NewsPage() {
                 <p className="text-sm font-bold text-primary-light">القصص المتاحة</p>
                 <h2 className="mt-2 text-3xl font-extrabold text-t1">مكتبة الأخبار السريعة</h2>
               </div>
-              <div className="rounded-full border border-subtle bg-white/[0.03] px-4 py-2 text-sm font-bold text-t2">
+              <div className="rounded-full border border-subtle bg-white/[0.03] px-4 py-2 text-sm font-bold text-t2" role="status" aria-live="polite">
                 {filteredItems.length} خبر ظاهر الآن
               </div>
             </div>
@@ -407,8 +414,7 @@ export default function NewsPage() {
                 <button
                   type="button"
                   onClick={() => {
-                    setQuery('');
-                    setActiveCategory('الكل');
+                    setParams(new URLSearchParams(), { replace: true });
                   }}
                   className="mt-6 inline-flex h-12 items-center justify-center rounded-2xl bg-primary px-6 text-sm font-extrabold text-white transition-all hover:bg-primary-light"
                 >
@@ -429,7 +435,7 @@ export default function NewsPage() {
                       viewport={{ once: true, amount: 0.2 }}
                       transition={{ delay: index * 0.05, duration: 0.35 }}
                       whileHover={{ y: -4 }}
-                      onClick={() => setSelectedId(item.id)}
+                      onClick={() => updateParams({ article: item.id }, { replace: false })}
                       className={`group relative overflow-hidden rounded-[30px] border p-5 text-right transition-all duration-300 ${
                         isActive
                           ? 'border-primary/35 bg-surface-2 shadow-[0_24px_70px_rgba(26,107,60,0.16)]'
