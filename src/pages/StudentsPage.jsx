@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft,
@@ -7,26 +7,57 @@ import {
   Check,
   FileText,
   GraduationCap,
+  RotateCcw,
   Search,
   Sparkles,
 } from 'lucide-react';
 import { Link } from '../lib/router';
 import Footer from '../components/Footer';
 import { studentChecklistItems, studentOpportunities } from '../data/students';
+import {
+  parseStudentProgress,
+  serializeStudentProgress,
+  STUDENT_PROGRESS_STORAGE_KEY,
+  toggleCompletedId,
+} from '../lib/studentProgress';
+
+const checklistIds = studentChecklistItems.map((item) => item.id);
+
+function loadCompletedIds() {
+  if (typeof window === 'undefined') return [];
+  try {
+    return parseStudentProgress(window.localStorage.getItem(STUDENT_PROGRESS_STORAGE_KEY), checklistIds);
+  } catch {
+    return [];
+  }
+}
+
+function persistCompletedIds(completedIds) {
+  try {
+    window.localStorage.setItem(
+      STUDENT_PROGRESS_STORAGE_KEY,
+      serializeStudentProgress(completedIds),
+    );
+  } catch {
+    // The checklist still works in memory when storage is unavailable.
+  }
+}
 
 export default function StudentsPage() {
-  const [completed, setCompleted] = useState([]);
-  const progress = useMemo(
-    () => Math.round((completed.length / studentChecklistItems.length) * 100),
-    [completed],
-  );
+  const [completedIds, setCompletedIds] = useState(loadCompletedIds);
+  const progress = Math.round((completedIds.length / studentChecklistItems.length) * 100);
 
-  const toggleItem = (index) => {
-    setCompleted((current) =>
-      current.includes(index)
-        ? current.filter((item) => item !== index)
-        : [...current, index],
-    );
+  const toggleItem = (id) => {
+    setCompletedIds((current) => {
+      const next = toggleCompletedId(current, id);
+      persistCompletedIds(next);
+      return next;
+    });
+  };
+
+  const resetProgress = () => {
+    setCompletedIds([]);
+    persistCompletedIds([]);
   };
 
   return (
@@ -73,11 +104,18 @@ export default function StudentsPage() {
                 <span className="text-text-secondary">نسبة الإنجاز</span>
                 <span className="text-blue">{progress}%</span>
               </div>
-              <div className="h-2 overflow-hidden rounded-full bg-white/[0.06]">
+              <div
+                className="h-2 overflow-hidden rounded-full bg-white/[0.06]"
+                role="progressbar"
+                aria-label="نسبة تجهيز ملف المنحة"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow={progress}
+              >
                 <div className="h-full rounded-full bg-gradient-to-l from-blue to-primary transition-all duration-300" style={{ width: `${progress}%` }} />
               </div>
               <p className="mt-5 rounded-2xl border border-border bg-white/[0.025] p-4 text-sm leading-7 text-text-secondary">
-                فعّل عناصر القائمة أدناه لترى تقدّمك. تُحفظ الحالة داخل الجلسة فقط في نسخة العرض.
+                فعّل عناصر القائمة أدناه لترى تقدّمك. تُحفظ الحالة محليًا على هذا الجهاز دون إنشاء حساب.
               </p>
             </motion.div>
           </div>
@@ -131,21 +169,34 @@ export default function StudentsPage() {
             </div>
 
             <div className="rounded-[28px] border border-border bg-bg-card p-5 sm:p-7">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <p className="text-sm font-extrabold text-text-primary">{completedIds.length} من {studentChecklistItems.length} مكتملة</p>
+                {completedIds.length > 0 ? (
+                  <button
+                    type="button"
+                    onClick={resetProgress}
+                    className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-extrabold text-text-muted transition hover:bg-white/[0.04] hover:text-text-primary"
+                  >
+                    <RotateCcw size={14} aria-hidden="true" />
+                    إعادة الضبط
+                  </button>
+                ) : null}
+              </div>
               <div className="space-y-3">
-                {studentChecklistItems.map((item, index) => {
-                  const isDone = completed.includes(index);
+                {studentChecklistItems.map((item) => {
+                  const isDone = completedIds.includes(item.id);
                   return (
                     <button
-                      key={item}
+                      key={item.id}
                       type="button"
-                      onClick={() => toggleItem(index)}
+                      onClick={() => toggleItem(item.id)}
                       aria-pressed={isDone}
                       className={`flex w-full items-center gap-4 rounded-2xl border p-4 text-right transition ${isDone ? 'border-primary/25 bg-primary/[0.07]' : 'border-border bg-white/[0.02] hover:border-border-strong'}`}
                     >
                       <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl border ${isDone ? 'border-primary bg-primary text-black' : 'border-border-strong text-text-muted'}`}>
                         {isDone ? <Check size={17} /> : <FileText size={16} />}
                       </span>
-                      <span className={`text-sm font-extrabold ${isDone ? 'text-primary line-through' : 'text-text-primary'}`}>{item}</span>
+                      <span className={`text-sm font-extrabold ${isDone ? 'text-primary line-through' : 'text-text-primary'}`}>{item.label}</span>
                     </button>
                   );
                 })}
