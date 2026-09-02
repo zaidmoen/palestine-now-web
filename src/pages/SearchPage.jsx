@@ -12,7 +12,9 @@ import {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Gemini Integration Setup
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-const API_KEY = "AIzaSyCczXoIVmQffDYgZG7DwEPeLIA6RwZ10ig";
+// Legacy prototype only. Never commit provider credentials to a browser bundle.
+// Production AI calls must go through a server-side proxy with scoped credentials.
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 const systemInstruction = `أنت المساعد الرقمي فائق الذكاء لمنصة "فلسطين الآن"، واسمك "مساعد فلسطين".
