@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "test": "vitest run",
-    "check": "npm run lint && npm test && npm run build",
+    "security:secrets": "node scripts/check-secrets.mjs",
+    "check": "npm run security:secrets && npm run lint && npm test && npm run build",
     "preview": "vite preview"
   },
   "dependencies": {
