@@ -6,12 +6,14 @@ import {
   ArrowLeft,
   BriefcaseBusiness,
   CircleDollarSign,
+  GraduationCap,
   HeartHandshake,
   MapPinned,
   Newspaper,
   Search,
   ShieldCheck,
   Sparkles,
+  X,
 } from 'lucide-react';
 import { searchCategories, searchContent } from '../data/searchIndex';
 
@@ -22,15 +24,18 @@ const categoryIcons = {
   طوارئ: AlertTriangle,
   تكافل: HeartHandshake,
   اقتصاد: CircleDollarSign,
+  طلاب: GraduationCap,
 };
 
 const quickSearches = ['حاجز قلنديا', 'مطور React', 'رقم الإسعاف', 'الدولار', 'منحة دراسية'];
 
 export default function SearchPage() {
   const [params, setParams] = useSearchParams();
-  const [input, setInput] = useState(params.get('q') || '');
   const query = params.get('q') || '';
-  const category = params.get('category') || 'الكل';
+  const [draft, setDraft] = useState({ source: query, value: query });
+  const input = draft.source === query ? draft.value : query;
+  const requestedCategory = params.get('category') || 'الكل';
+  const category = searchCategories.includes(requestedCategory) ? requestedCategory : 'الكل';
 
   const results = useMemo(() => searchContent(query, category), [query, category]);
 
@@ -50,8 +55,15 @@ export default function SearchPage() {
   };
 
   const runQuickSearch = (value) => {
-    setInput(value);
+    setDraft({ source: value, value });
     setParams({ q: value });
+  };
+
+  const clearSearch = () => {
+    setDraft({ source: '', value: '' });
+    const next = new URLSearchParams();
+    if (category !== 'الكل') next.set('category', category);
+    setParams(next);
   };
 
   return (
@@ -80,11 +92,22 @@ export default function SearchPage() {
               <input
                 id="global-search"
                 value={input}
-                onChange={(event) => setInput(event.target.value)}
+                onChange={(event) => setDraft({ source: query, value: event.target.value })}
                 placeholder="مثال: حاجز قلنديا، وظيفة React، رقم الإسعاف..."
                 className="h-14 min-w-0 flex-1 bg-transparent text-base font-semibold text-text-primary outline-none placeholder:text-text-muted md:text-lg"
                 autoComplete="off"
+                aria-describedby="search-privacy"
               />
+              {input ? (
+                <button
+                  type="button"
+                  onClick={clearSearch}
+                  aria-label="مسح عبارة البحث"
+                  className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-text-muted transition hover:bg-white/[0.05] hover:text-text-primary"
+                >
+                  <X size={18} aria-hidden="true" />
+                </button>
+              ) : null}
               <button type="submit" className="btn-primary h-12 px-6 md:px-9">
                 بحث
               </button>
@@ -130,11 +153,11 @@ export default function SearchPage() {
               <h2 className="text-lg font-black text-text-primary">
                 {query ? `نتائج “${query}”` : 'كل محتوى المنصة'}
               </h2>
-              <p className="mt-1 text-sm font-medium text-text-muted">
+              <p className="mt-1 text-sm font-medium text-text-muted" role="status" aria-live="polite">
                 {results.length} نتيجة {category !== 'الكل' && `في ${category}`}
               </p>
             </div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-2 text-xs font-bold text-text-secondary">
+            <div id="search-privacy" className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-2 text-xs font-bold text-text-secondary">
               <ShieldCheck size={14} className="text-primary" />
               لا يتم إرسال بحثك إلى طرف خارجي
             </div>

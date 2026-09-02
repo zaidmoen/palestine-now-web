@@ -12,45 +12,12 @@ import {
 } from 'lucide-react';
 import { Link } from '../lib/router';
 import Footer from '../components/Footer';
-
-const opportunities = [
-  {
-    id: 'scholarship-1',
-    type: 'منحة',
-    title: 'منحة تفوق جامعية',
-    provider: 'نموذج جهة مانحة',
-    deadline: '30 سبتمبر',
-    description: 'مثال على فرصة قابلة للربط بجهة رسمية مع المتطلبات والموعد والرابط الموثّق.',
-  },
-  {
-    id: 'training-1',
-    type: 'تدريب',
-    title: 'مسار مهارات رقمية',
-    provider: 'نموذج شريك تدريبي',
-    deadline: '15 أكتوبر',
-    description: 'بطاقة نموذجية لبرنامج تدريبي تشمل الفئة المستهدفة والمدة وطريقة التقديم.',
-  },
-  {
-    id: 'loan-1',
-    type: 'تمويل',
-    title: 'قرض دراسي حسن',
-    provider: 'نموذج صندوق طلابي',
-    deadline: 'مفتوح دوريًا',
-    description: 'مكان موحّد لعرض شروط التمويل والوثائق وسياسة السداد بعد التحقق من المصدر.',
-  },
-];
-
-const checklistItems = [
-  'تجهيز صورة الهوية وكشف العلامات',
-  'كتابة رسالة الدافع ومراجعتها',
-  'طلب رسالة توصية من المدرّس',
-  'مراجعة الموعد النهائي والرابط الرسمي',
-];
+import { studentChecklistItems, studentOpportunities } from '../data/students';
 
 export default function StudentsPage() {
   const [completed, setCompleted] = useState([]);
   const progress = useMemo(
-    () => Math.round((completed.length / checklistItems.length) * 100),
+    () => Math.round((completed.length / studentChecklistItems.length) * 100),
     [completed],
   );
 
@@ -129,7 +96,7 @@ export default function StudentsPage() {
             </div>
 
             <div className="grid gap-4 lg:grid-cols-3">
-              {opportunities.map((item, index) => (
+              {studentOpportunities.map((item, index) => (
                 <motion.article
                   key={item.id}
                   initial={{ opacity: 0, y: 18 }}
@@ -165,7 +132,7 @@ export default function StudentsPage() {
 
             <div className="rounded-[28px] border border-border bg-bg-card p-5 sm:p-7">
               <div className="space-y-3">
-                {checklistItems.map((item, index) => {
+                {studentChecklistItems.map((item, index) => {
                   const isDone = completed.includes(index);
                   return (
                     <button
