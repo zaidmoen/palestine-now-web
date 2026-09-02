@@ -4,8 +4,9 @@ import { jobItems } from './jobs';
 import { newsItems } from './news';
 import { checkpoints, crossings, mainRoutes, roadStatuses } from './roads';
 import { campaigns } from './solidarity';
+import { studentOpportunities } from './students';
 
-const normalizeArabic = (value = '') =>
+export const normalizeArabic = (value = '') =>
   String(value)
     .toLocaleLowerCase('ar')
     .normalize('NFKD')
@@ -99,6 +100,15 @@ export const searchEntries = [
     meta: `${item.category} · ${Math.round((item.raised / item.goal) * 100)}% من الهدف`,
     to: '/solidarity',
   })),
+  ...studentOpportunities.map((item) => entry({
+    id: `student-${item.id}`,
+    category: 'طلاب',
+    title: item.title,
+    description: item.description,
+    meta: `${item.type} · ${item.provider} · ${item.deadline}`,
+    to: '/students',
+    keywords: ['طالب', 'جامعة', 'دراسة', 'منحة', 'تدريب', 'تمويل'],
+  })),
   ...currencies.map((item) => entry({
     id: item.id,
     category: 'اقتصاد',
@@ -125,7 +135,7 @@ export const searchEntries = [
   })),
 ];
 
-export const searchCategories = ['الكل', 'أخبار', 'وظائف', 'طرق', 'طوارئ', 'تكافل', 'اقتصاد'];
+export const searchCategories = ['الكل', 'أخبار', 'وظائف', 'طلاب', 'طرق', 'طوارئ', 'تكافل', 'اقتصاد'];
 
 export function searchContent(query, category = 'الكل') {
   const terms = normalizeArabic(query).split(' ').filter(Boolean);
