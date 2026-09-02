@@ -26,8 +26,8 @@ export const studentOpportunities = [
 ];
 
 export const studentChecklistItems = [
-  'تجهيز صورة الهوية وكشف العلامات',
-  'كتابة رسالة الدافع ومراجعتها',
-  'طلب رسالة توصية من المدرّس',
-  'مراجعة الموعد النهائي والرابط الرسمي',
+  { id: 'identity', label: 'تجهيز صورة الهوية وكشف العلامات' },
+  { id: 'motivation', label: 'كتابة رسالة الدافع ومراجعتها' },
+  { id: 'recommendation', label: 'طلب رسالة توصية من المدرّس' },
+  { id: 'deadline', label: 'مراجعة الموعد النهائي والرابط الرسمي' },
 ];
